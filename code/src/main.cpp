@@ -4,9 +4,9 @@
 #include "odometry/odom4EncImu2.hpp"
 #include "odometry/odom4EncImuSimp.hpp"
 
-#define ACTIVE_ODOM odom1
-
-void initialize() {}
+void initialize() {
+		std::cout.setf(std::ios::fixed);
+}
 
 void disabled() {}
 
@@ -74,23 +74,56 @@ void opcontrol() {
 			})
 	);
 */
+/*
 	auto odomLog = std::make_shared<kappa::ArrayInputLogger<double,6>>(
-		ACTIVE_ODOM
+		odom2
 	);
+*/
 
-	pros::Task odomTask([&]{
+	int tcount1 = 0;
+	int tcount2 = 0;
+	int tcount3 = 0;
+
+	pros::Task odomTask1([&]{
 		auto t = pros::millis();
 
 		while(true){
-			ACTIVE_ODOM->step();
+			odom2->step();
+			tcount1++;
 			pros::Task::delay_until(&t, 2);
 		}
-	}, "Odom");
+	}, "OdomTask1");
+
+
+	pros::Task odomTask2([&]{
+		auto t = pros::millis();
+
+		while(true){
+			odom3->step();
+			tcount2++;
+			pros::Task::delay_until(&t, 2);
+		}
+	}, "OdomTask2");
+
+	pros::Task odomTask3([&]{
+		auto t = pros::millis();
+
+		while(true){
+			odom4->step();
+			tcount3++;
+			pros::Task::delay_until(&t, 2);
+		}
+	}, "OdomTask3");
 
 	pros::Task logTask([&]{
 		while(true){
 			//sensorLog->get();
-			odomLog->get();
+			//odomLog->get();
+
+			const auto &p1 = odom2->get();
+			const auto &p2 = odom3->get();
+			const auto &p3 = odom4->get();
+			std::cout << p1[0] << ',' << p1[1] << '\t' << p2[0] << ',' << p2[1] << '\t' << p3[0] << ',' << p3[1] << '\n';
 			pros::delay(500);
 		}
 	}, "Log");
