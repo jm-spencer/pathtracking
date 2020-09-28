@@ -15,15 +15,17 @@ Odom4EncImu::Odom4EncImu(OdomVals &&ivals,
 const std::array<double,6> &Odom4EncImu::step() {
   const std::array<double,5> &in = input->get();
 
-  double dL = in[0] - lastIn[0];
-  double dB = in[1] - lastIn[1];
-  double dR = in[2] - lastIn[2];
-  double dF = in[3] - lastIn[3];
   double dT = pros::millis() - lastIn[5];
 
   if(dT == 0) return pose;
 
   lastIn[5] = pros::millis();
+
+  double dL = in[0] - lastIn[0];
+  double dB = in[1] - lastIn[1];
+  double dR = in[2] - lastIn[2];
+  double dF = in[3] - lastIn[3];
+  
   lastIn[0] = in[0];
   lastIn[1] = in[1];
   lastIn[2] = in[2];
@@ -43,21 +45,21 @@ const std::array<double,6> &Odom4EncImu::step() {
     double lsin = sin(pose[2]);
     double lcos = cos(pose[2]);
 
-    double dV  = (dL + dR) / 2.0;
-    double dSV = (dB + dF) / 2.0;
+    double dS  = (dL + dR) / 2.0;
+    double dSL = (dB + dF) / 2.0;
 
-    pose[0] += lcos * dV -
-               lsin * dSV;
-    pose[1] += lcos * dSV +
-               lsin * dV;
+    pose[0] += lcos * dS -
+               lsin * dSL;
+    pose[1] += lcos * dSL +
+               lsin * dS;
 
-    pose[3] = velFilter->   filter(dV  / dT);
-    pose[4] = stfVelFilter->filter(dSV / dT);
+    pose[3] = velFilter->   filter(dS  / dT);
+    pose[4] = stfVelFilter->filter(dSL / dT);
     pose[5] = angVelFilter->filter(0);
 
   }else{
-    double lsin = sin((pose[2]) + 0.5 * dTheta);
-    double lcos = cos((pose[2]) + 0.5 * dTheta);
+    double lsin = sin(pose[2] + 0.5 * dTheta);
+    double lcos = cos(pose[2] + 0.5 * dTheta);
     double cOffset = 2 * sin(dTheta / 2);
 
     double A_r = (dL + dR) / (2 * dTheta);

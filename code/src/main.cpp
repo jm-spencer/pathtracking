@@ -29,7 +29,10 @@ void opcontrol() {
 	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  M_PI * 2.75 / 360.0);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
-	auto odom1 = std::make_shared<Odom4Enc>(Odom4Enc::OdomVals{13.3125, 5.4375},
+	imu->calibrate();
+	pros::delay(2100);
+
+	auto odom1 = std::make_shared<Odom4Enc>(Odom4Enc::OdomVals{13.3125, 10.875},
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -38,7 +41,7 @@ void opcontrol() {
 		})
 	);
 
-	auto odom2 = std::make_shared<Odom4EncImu>(Odom4EncImu::OdomVals{13.3125, 5.4375},
+	auto odom2 = std::make_shared<Odom4EncImu>(Odom4EncImu::OdomVals{13.3125, 10.875},
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -56,7 +59,7 @@ void opcontrol() {
 		})
 	);
 
-	auto odom4 = std::make_shared<Odom4EncImuSimp>(Odom4EncImuSimp::OdomVals{13.3125, 5.4375},
+	auto odom4 = std::make_shared<Odom4EncImuSimp>(Odom4EncImuSimp::OdomVals{13.3125, 10.875},
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -64,24 +67,37 @@ void opcontrol() {
 			lEnc, bEnc, rEnc, fEnc, imu
 		})
 	);
-
+/*
+	auto sensorLog = std::make_shared<kappa::ArrayInputLogger<double,5>>(6, ", ", ", ", ", ",
+		std::make_shared<kappa::ArrayConsolidator<double,5>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
+				lEnc, bEnc, rEnc, fEnc, imu
+			})
+	);
+*/
 	auto odomLog = std::make_shared<kappa::ArrayInputLogger<double,6>>(
 		ACTIVE_ODOM
 	);
 
-	auto t = pros::millis();
+	pros::Task odomTask([&]{
+		auto t = pros::millis();
 
-	pros::Task([&]{
-		ACTIVE_ODOM->step();
-
-		pros::Task::delay_until(&t, 2);
+		while(true){
+			ACTIVE_ODOM->step();
+			pros::Task::delay_until(&t, 2);
+		}
 	}, "Odom");
+
+	pros::Task logTask([&]{
+		while(true){
+			//sensorLog->get();
+			odomLog->get();
+			pros::delay(500);
+		}
+	}, "Log");
 
 	while(true){
 		chassis->set({12000 * controller.getAnalog(okapi::ControllerAnalog::leftY),
 									12000 * controller.getAnalog(okapi::ControllerAnalog::rightY)});
-
-		odomLog->get();
 
 		pros::delay(10);
 	}
