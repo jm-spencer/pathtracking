@@ -52,10 +52,10 @@ void opcontrol() {
 								std::make_shared<kappa::VoltageMotor>(std::make_shared<okapi::MotorGroup>(std::initializer_list<okapi::Motor>({ 1, 2})))
 							)
 						),
-						std::make_shared<kappa::OutputChartLogger<double>>(chart1, targ2,
+						std::make_shared<kappa::OutputChartLogger<double>>(chart2, targ2,
 							std::make_shared<kappa::VPidSubController>(
 								kappa::VPidSubController::Gains{50,0,50,2000}, -12000, 12000,
-								std::make_shared<kappa::InputChartLogger<double>>(chart1, read2,
+								std::make_shared<kappa::InputChartLogger<double>>(chart2, read2,
 									std::make_shared<kappa::InputDifferentiator<double>>(20.0/3.0,
 										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8, true))
 									)
@@ -167,8 +167,8 @@ void opcontrol() {
 	}, "Log");
 
 	while(true){
-		chassis->set({40 * controller.getAnalog(okapi::ControllerAnalog::rightY),
-									5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)});
+		chassis->set({40   * controller.getAnalog(okapi::ControllerAnalog::rightY),
+									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)});
 
 		pros::delay(10);
 	}
