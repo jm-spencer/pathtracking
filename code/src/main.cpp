@@ -19,14 +19,14 @@ void opcontrol() {
 	lv_obj_set_pos(chart1, 0, 0);
 	lv_obj_set_size(chart1, 480, 120);
 	lv_chart_set_type(chart1, LV_CHART_TYPE_LINE);
-	lv_chart_set_range(chart1, -200, 200);
+	lv_chart_set_range(chart1, -230, 230);
 	lv_chart_set_point_count(chart1, 240);
 
 	auto chart2 = lv_chart_create(lv_scr_act(), NULL);
 	lv_obj_set_pos(chart2, 0, 120);
 	lv_obj_set_size(chart2, 480, 120);
 	lv_chart_set_type(chart2, LV_CHART_TYPE_LINE);
-	lv_chart_set_range(chart2, -200, 200);
+	lv_chart_set_range(chart2, -230, 230);
 	lv_chart_set_point_count(chart2, 240);
 
 	auto targ1 = lv_chart_add_series(chart1, LV_COLOR_BLACK);
@@ -38,14 +38,14 @@ void opcontrol() {
 
 	auto chassis = //std::make_shared<kappa::TupleOutputLogger<double,double>>(6, " Chassis Commands ", " | ", "\n",
 		std::make_shared<kappa::TwoAxisChassis>(4.125, 14.8125,
-			std::make_shared<kappa::ArrayOutputClamp<double,2>>(-200, 200,
+			std::make_shared<kappa::ArrayOutputClamp<double,2>>(-220, 220,
 				//std::make_shared<kappa::ArrayOutputLogger<double,2>>(6, " Motor Commands ", " | ", "\n",
 					std::make_shared<kappa::ArrayDistributor<double,2>>(std::initializer_list<std::shared_ptr<kappa::AbstractOutput<double>>>{
 						std::make_shared<kappa::OutputChartLogger<double>>(chart1, targ1,
 							std::make_shared<kappa::VPidSubController>(
-								kappa::VPidSubController::Gains{50,0,50,2000}, -12000, 12000,
+								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
 								std::make_shared<kappa::InputChartLogger<double>>(chart1, read1,
-									std::make_shared<kappa::InputDifferentiator<double>>(20.0/3.0,
+									std::make_shared<kappa::InputDifferentiator<double>>(20.0/3.0, std::make_unique<okapi::EmaFilter>(.65),
 										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(1))
 									)
 								),
@@ -54,9 +54,9 @@ void opcontrol() {
 						),
 						std::make_shared<kappa::OutputChartLogger<double>>(chart2, targ2,
 							std::make_shared<kappa::VPidSubController>(
-								kappa::VPidSubController::Gains{50,0,50,2000}, -12000, 12000,
+								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
 								std::make_shared<kappa::InputChartLogger<double>>(chart2, read2,
-									std::make_shared<kappa::InputDifferentiator<double>>(20.0/3.0,
+									std::make_shared<kappa::InputDifferentiator<double>>(20.0/3.0, std::make_unique<okapi::EmaFilter>(.65),
 										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8, true))
 									)
 								),
