@@ -177,8 +177,8 @@ void opcontrol() {
 	}, "Log");
 
 	while(true){
-		chassis->set({40 * controller.getAnalog(okapi::ControllerAnalog::leftY),
-									5.5 * controller.getAnalog(okapi::ControllerAnalog::leftX)});
+		chassis->set({40 * controller.getAnalog(okapi::ControllerAnalog::rightY),
+									5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)});
 
 		pros::delay(10);
 	}
