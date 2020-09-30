@@ -1,5 +1,4 @@
 #include "main.h"
-#include "odometry/odom4Enc.hpp"
 #include "odometry/odom4EncImu.hpp"
 #include "odometry/odom4EncImu2.hpp"
 #include "odometry/odom4EncImuSimp.hpp"
@@ -78,15 +77,6 @@ void opcontrol() {
 
 	imu->calibrate();
 	pros::delay(2100);
-
-	auto odom1 = std::make_shared<Odom4Enc>(Odom4Enc::OdomVals{13.3125, 10.875},
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_shared<kappa::ArrayConsolidator<double,4>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
-			lEnc, bEnc, rEnc, fEnc
-		})
-	);
 
 	auto odom2 = std::make_shared<Odom4EncImu>(Odom4EncImu::OdomVals{13.3125, 10.875},
 		std::make_unique<okapi::PassthroughFilter>(),
