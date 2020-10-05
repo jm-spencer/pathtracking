@@ -45,7 +45,7 @@ void opcontrol() {
 							std::make_shared<kappa::VPidSubController>(
 								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
 								std::make_shared<kappa::InputChartLogger<double>>(chart1, read1,
-									std::make_shared<kappa::InputDifferentiator<double>>(20.0/3.0, std::make_unique<okapi::EmaFilter>(.65),
+									std::make_shared<kappa::InputDifferentiator<double>>(6000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
 										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(1))
 									)
 								),
@@ -56,7 +56,7 @@ void opcontrol() {
 							std::make_shared<kappa::VPidSubController>(
 								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
 								std::make_shared<kappa::InputChartLogger<double>>(chart2, read2,
-									std::make_shared<kappa::InputDifferentiator<double>>(20.0/3.0, std::make_unique<okapi::EmaFilter>(.65),
+									std::make_shared<kappa::InputDifferentiator<double>>(6000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
 										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8, true))
 									)
 								),
@@ -166,10 +166,13 @@ void opcontrol() {
 		}
 	}, "Log");
 
+	auto t = pros::millis();
+
 	while(true){
+
 		chassis->set({40   * controller.getAnalog(okapi::ControllerAnalog::rightY),
 									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)});
 
-		pros::delay(10);
+		pros::Task::delay_until(&t,10);
 	}
 }
