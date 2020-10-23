@@ -37,7 +37,7 @@ void opcontrol() {
 	okapi::Controller controller;
 
 	auto chassis = //std::make_shared<kappa::TupleOutputLogger<double,double>>(6, " Chassis Commands ", " | ", "\n",
-		std::make_shared<kappa::TwoAxisChassis>(4.125, 14.8125,
+		std::make_shared<kappa::TwoAxisChassis>(10.4775, 37.62375,
 			std::make_shared<kappa::ArrayOutputClamp<double,2>>(-220, 220,
 				//std::make_shared<kappa::ArrayOutputLogger<double,2>>(6, " Motor Commands ", " | ", "\n",
 					std::make_shared<kappa::ArrayDistributor<double,2>>(std::initializer_list<std::shared_ptr<kappa::AbstractOutput<double>>>{
@@ -69,16 +69,16 @@ void opcontrol() {
 		)
 	;//);
 
-	auto lEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(3,4), -M_PI * 2.75 / 360.0);
-	auto bEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(7,8), -M_PI * 2.75 / 360.0);
-	auto rEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(5,6),  M_PI * 2.75 / 360.0);
-	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  M_PI * 2.75 / 360.0);
+	auto lEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(3,4), -M_PI * 6.985 / 360.0);
+	auto bEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(7,8), -M_PI * 6.985 / 360.0);
+	auto rEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(5,6),  M_PI * 6.985 / 360.0);
+	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  M_PI * 6.985 / 360.0);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
 	imu->calibrate();
 	pros::delay(2100);
 
-	auto odom2 = std::make_shared<Odom4EncImu>(Odom4EncImu::OdomVals{13.3125, 10.875},
+	auto odom2 = std::make_shared<Odom4EncImu>(Odom4EncImu::OdomVals{33.81375, 27.6225},
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -96,7 +96,7 @@ void opcontrol() {
 		})
 	);
 
-	auto odom4 = std::make_shared<Odom4EncImuSimp>(Odom4EncImuSimp::OdomVals{13.3125, 10.875},
+	auto odom4 = std::make_shared<Odom4EncImuSimp>(Odom4EncImuSimp::OdomVals{33.81375, 27.6225},
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -170,8 +170,8 @@ void opcontrol() {
 
 	while(true){
 
-		chassis->set({40   * controller.getAnalog(okapi::ControllerAnalog::rightY),
-									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)});
+		chassis->set({100  * controller.getAnalog(okapi::ControllerAnalog::rightY), // Maximum linear speed, 100 cm/s
+									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)}); // Maximum angular velocity, 5.5 rad/s
 
 		pros::Task::delay_until(&t,10);
 	}
