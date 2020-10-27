@@ -18,8 +18,8 @@ template<> std::array<double,2> LookaheadTracker<2>::getGoalPoint(double robotx,
 
   double lambda = (sqrt(b * b - a * c) - b) / a;
 
-  return {(1+lambda) * activeWaypoint[0] - lambda * lastWaypoint[0],
-          (1+lambda) * activeWaypoint[1] - lambda * lastWaypoint[1]};
+  return {activeWaypoint[0] + lambda * deltaPX,
+          activeWaypoint[1] + lambda * deltaPY};
 }
 
 template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx, double roboty, double effectiveLookaheadSqr){
@@ -40,7 +40,7 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
 
   double lambda = (sqrt(b * b - a * c) - b) / a;
 
-  return {(1+lambda) * activeWaypoint[0] - lambda * lastWaypoint[0],
-          (1+lambda) * activeWaypoint[1] - lambda * lastWaypoint[1],
+  return {activeWaypoint[0] + lambda * deltaPX,
+          activeWaypoint[1] + lambda * deltaPY,
           atan2(deltaPY, deltaPX)};
 }
