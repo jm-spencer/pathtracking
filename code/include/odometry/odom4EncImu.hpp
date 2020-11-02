@@ -3,13 +3,7 @@
 
 class Odom4EncImu : public kappa::ComputationalInput<std::array<double,6>> {
 public:
-  struct OdomVals {
-    double rlTrackingWidth;
-    double fbTrackingWidth;
-  };
-
-  Odom4EncImu(OdomVals &&ivals,
-              std::unique_ptr<okapi::Filter> ivelFilter,
+  Odom4EncImu(std::unique_ptr<okapi::Filter> ivelFilter,
               std::unique_ptr<okapi::Filter> istfVelFilter,
               std::unique_ptr<okapi::Filter> iangVelFilter,
               std::shared_ptr<kappa::AbstractInput<std::array<double,5>>> iinput); // left, back, right, front, imu (positive dir front;left;ccw)
@@ -20,7 +14,6 @@ public:
 
 protected:
   std::shared_ptr<kappa::AbstractInput<std::array<double,5>>> input;
-  OdomVals vals;
   std::unique_ptr<okapi::Filter> velFilter;
   std::unique_ptr<okapi::Filter> stfVelFilter;
   std::unique_ptr<okapi::Filter> angVelFilter;

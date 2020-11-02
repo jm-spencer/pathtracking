@@ -1,6 +1,5 @@
 #include "main.h"
 #include "odometry/odom4EncImu.hpp"
-#include "odometry/odom4EncImu2.hpp"
 #include "odometry/odom4EncImuSimp.hpp"
 
 void initialize() {
@@ -78,7 +77,8 @@ void opcontrol() {
 	imu->calibrate();
 	pros::delay(2100);
 
-	auto odom2 = std::make_shared<Odom4EncImu>(Odom4EncImu::OdomVals{33.81375, 27.6225},
+/*
+	auto odom2 = std::make_shared<Odom4EncImu>(//OdomVals{33.81375, 27.6225},
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -86,17 +86,8 @@ void opcontrol() {
 			lEnc, bEnc, rEnc, fEnc, imu
 		})
 	);
-
-	auto odom3 = std::make_shared<Odom4EncImu2>(
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_shared<kappa::ArrayConsolidator<double,5>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
-			lEnc, bEnc, rEnc, fEnc, imu
-		})
-	);
-
-	auto odom4 = std::make_shared<Odom4EncImuSimp>(Odom4EncImuSimp::OdomVals{33.81375, 27.6225},
+*/
+	auto odom = std::make_shared<Odom4EncImuSimp>(//OdomVals{33.81375, 27.6225},
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -111,61 +102,39 @@ void opcontrol() {
 			})
 	);
 */
+
 /*
-	auto odomLog = std::make_shared<kappa::ArrayInputLogger<double,6>>(
-		odom2
-	);
-*/
-
-	int tcount1 = 0;
-	int tcount2 = 0;
-	int tcount3 = 0;
-
-	pros::Task odomTask1([&]{
-		auto t = pros::millis();
-
-		while(true){
-			odom2->step();
-			tcount1++;
-			pros::Task::delay_until(&t, 2);
-		}
-	}, "OdomTask1");
-
-
 	pros::Task odomTask2([&]{
 		auto t = pros::millis();
 
 		while(true){
-			odom3->step();
-			tcount2++;
-			pros::Task::delay_until(&t, 2);
+			odom2->step();
+			pros::Task::delay_until(&t, 10);
 		}
-	}, "OdomTask2");
+	}, "OdomTask1");
+*/
 
-	pros::Task odomTask3([&]{
+	pros::Task odomTask([&]{
 		auto t = pros::millis();
 
 		while(true){
-			odom4->step();
-			tcount3++;
-			pros::Task::delay_until(&t, 2);
+			odom->step();
+			pros::Task::delay_until(&t, 10);
 		}
-	}, "OdomTask3");
-
+	}, "Odom Task");
+/*
 	pros::Task logTask([&]{
 		while(true){
 			//sensorLog->get();
 			//odomLog->get();
 
-			const auto &p1 = odom2->get();
-			const auto &p2 = odom3->get();
-			const auto &p3 = odom4->get();
-			std::cout << tcount1 << '\t' << tcount2 << '\t' << tcount3 << '\t';
-			std::cout << p1[0] << ',' << p1[1] 	<< '\t' << p2[0] << ',' << p2[1] << '\t' << p3[0] << ',' << p3[1] << '\n';
+			const auto &p1 = odom->get();
+			const auto &p2 = odom2->get();
+			std::cout << p1[0] << ',' << p1[1] 	<< '\t' << p2[0] << ',' << p2[1] << '\n';
 			pros::delay(500);
 		}
 	}, "Log");
-
+*/
 	auto t = pros::millis();
 
 	while(true){
