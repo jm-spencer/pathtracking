@@ -15,18 +15,41 @@ namespace kappa {
 template <typename T, std::size_t N>
 class ArrayOutputLogger : public AbstractOutput<std::array<T,N>> {
 public:
+
+  /**
+   * Logs array data that passes through it. By default logs to std::cout,
+   * but can also log to filestreams
+   * Assumes operator<<(std::ostream,T) is defined
+   *
+   * @param ioutput output for data
+   */
   ArrayOutputLogger(std::shared_ptr<AbstractOutput<std::array<T,N>>> ioutput = std::make_shared<NullOutput<std::array<T,N>>>()):
-    ArrayOutputLogger(6, " ", " ", "\n", std::cout, ioutput) {}
+    ArrayOutputLogger(" ", " ", "\n", std::cout, ioutput) {}
 
-  ArrayOutputLogger(int iprecision, std::string iprefix, std::string iseparator, std::string ipostfix, std::shared_ptr<AbstractOutput<std::array<T,N>>> ioutput = std::make_shared<NullOutput<std::array<T,N>>>()):
-    ArrayOutputLogger(iprecision, iprefix, iseparator, ipostfix, std::cout, ioutput) {}
+  /**
+   * @param iprefix string that preceeds each line of data
+   * @param iseparator string that is printed between each element of data
+   * @param ipostfix string that follows each line of data (like a newline char)
+   * @param ioutput output for data
+   */
+  ArrayOutputLogger(std::string iprefix, std::string iseparator, std::string ipostfix, std::shared_ptr<AbstractOutput<std::array<T,N>>> ioutput = std::make_shared<NullOutput<std::array<T,N>>>()):
+    ArrayOutputLogger(iprefix, iseparator, ipostfix, std::cout, ioutput) {}
 
-  ArrayOutputLogger(int iprecision, std::string iprefix, std::string iseparator, std::string ipostfix, std::ostream &iout, std::shared_ptr<AbstractOutput<std::array<T,N>>> ioutput = std::make_shared<NullOutput<std::array<T,N>>>()):
-    output(ioutput), prefix(iprefix), separator(iseparator), postfix(ipostfix), out(iout) {
+  /**
+   * @param iprefix string that preceeds each line of data
+   * @param iseparator string that is printed between each element of data
+   * @param ipostfix string that follows each line of data (like a newline char)
+   * @param iout ostream to print data to
+   * @param ioutput output for data
+   */
+  ArrayOutputLogger(std::string iprefix, std::string iseparator, std::string ipostfix, std::ostream &iout, std::shared_ptr<AbstractOutput<std::array<T,N>>> ioutput = std::make_shared<NullOutput<std::array<T,N>>>()):
+    output(ioutput), prefix(iprefix), separator(iseparator), postfix(ipostfix), out(iout) {}
 
-    out << std::setprecision(iprecision);
-  }
-
+  /**
+   * Logs the target data and passes it to the output
+   *
+   * @param itarget target data
+   */
   virtual void set(const std::array<T,N> &itarget) override {
     out << pros::millis() << prefix << itarget[0];
 
@@ -39,6 +62,11 @@ public:
     output->set(itarget);
   }
 
+  /**
+   * Gets output
+   *
+   * @return output
+   */
   std::shared_ptr<AbstractOutput<std::array<T,N>>> getOutput() const {
     return output;
   };

@@ -8,17 +8,26 @@
 
 namespace kappa {
 
-/**
- * Note: requires definition of the operators < > / and *=
- * for T values
- */
-
 template <typename T, std::size_t N>
 class ArrayOutputClamp : public AbstractOutput<std::array<T,N>> {
 public:
+
+  /**
+   * Constrains control signals within a given domain, while preserving ratios therebetween
+   * Requires definition of <, >, /, and *= for type T
+   *
+   * @param imin minimum value
+   * @param imax maximum value
+   * @param ioutput output for data
+   */
   ArrayOutputClamp(T imin, T imax, std::shared_ptr<AbstractOutput<std::array<T,N>>> ioutput):
     output(ioutput), min(imin), max(imax) {}
 
+  /**
+   * Calculates the constrained target signals and sets them to the output
+   *
+   * @param itarget targets
+   */
   virtual void set(const std::array<T,N> &itarget) override {
     T maxVal = *std::max_element(itarget.begin(), itarget.end());
     T minVal = *std::min_element(itarget.begin(), itarget.end());
@@ -38,6 +47,11 @@ public:
     }
   }
 
+  /**
+   * Gets output
+   *
+   * @return output
+   */
   std::shared_ptr<AbstractOutput<std::array<T,N>>> getOutput() const {
     return output;
   }

@@ -8,17 +8,28 @@
 
 namespace kappa {
 
-/*
- * Opens a CSV file of doubles. For each iteration, it takes one row of values
- * and passes it as an array of control signals
- */
-
 template <std::size_t N>
 class FileInput : public SimpleInput<std::array<double,N>> {
 public:
+  
+  /**
+   * Opens a CSV file of doubles. For each iteration, it takes one row of values
+   * and passes it as an array of values
+   * 
+   * @param filename path to file (make sure it begins with /usd/)
+   */
   FileInput(const std::string &filename):
     file(filename){}
 
+  ~FileInput() {
+    file.close();
+  }
+
+  /**
+   * gets values from the file
+   * 
+   * @return values
+   */
   virtual const std::array<double,N> &get() override {
     if(!finished) {
       std::getline(file, line, '\n');
@@ -33,13 +44,17 @@ public:
         }
       }catch(...){ // Will catch if there is no remaining valid doubles - assumes end of file
         finished = true;
-        value.fill(0);
       }
     }
 
     return value;
   }
 
+  /**
+   * gets previous values, without getting new values from the file
+   * 
+   * @returns values
+   */
   virtual const std::array<double,N> &getValue() const override {
     return value;
   }
