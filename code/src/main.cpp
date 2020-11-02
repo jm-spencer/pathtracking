@@ -1,6 +1,7 @@
 #include "main.h"
 #include "odometry/odom4EncImu.hpp"
 #include "odometry/odom4EncImuSimp.hpp"
+#include "tracking/followTheCarrot.hpp"
 
 void initialize() {
 		std::cout.setf(std::ios::fixed);
@@ -74,6 +75,9 @@ void opcontrol() {
 	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  M_PI * 6.985 / 360.0);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
+	//kP value of 2, desired speed of 100 cm/s, lookahead distance of 15 cm
+	FollowTheCarrotTracker ftcTracker(2, 100, 15);
+
 	imu->calibrate();
 	pros::delay(2100);
 
@@ -142,6 +146,6 @@ void opcontrol() {
 		chassis->set({100  * controller.getAnalog(okapi::ControllerAnalog::rightY), // Maximum linear speed, 100 cm/s
 									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)}); // Maximum angular velocity, 5.5 rad/s
 
-		pros::Task::delay_until(&t,10);
+		pros::Task::delay_until(&t, 10);
 	}
 }

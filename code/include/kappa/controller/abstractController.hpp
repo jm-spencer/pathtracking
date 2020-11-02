@@ -16,7 +16,7 @@ public:
    * A controller, which uses some sensory data given by its input to determine
    * an output that will drive the system to the desired target.
    */
-  AbstractController() {}
+//  AbstractController() = default;
 
   /**
    * Sets the target for the controller
@@ -118,11 +118,11 @@ public:
   }
 
 protected:
-  TARGET target{0};
-  IN lastReading{0};
-  IN error{0};
+  TARGET target;
+  IN lastReading;
+  IN error;
 
-  OUT output{0};
+  OUT output;
 
   bool disabled{false};
 };

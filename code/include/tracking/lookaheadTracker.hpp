@@ -6,7 +6,7 @@ template <std::size_t N>
 class LookaheadTracker: public AbstractTracker<N> {
 public:
   LookaheadTracker(double ilookaheadDist):
-    lookaheadDist(ilookaheadDist), 
+    lookaheadDist(ilookaheadDist),
     lookaheadDistSqr(ilookaheadDist * ilookaheadDist){
 
     lastWaypoint.fill(0);
