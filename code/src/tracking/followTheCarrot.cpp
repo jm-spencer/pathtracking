@@ -3,6 +3,7 @@
 
 FollowTheCarrotTracker::FollowTheCarrotTracker(double ikP, double ispeedTarget, double ilookaheadDist):
   kP(ikP), speedTarget(ispeedTarget), LookaheadTracker(ilookaheadDist) {
+    std::get<0>(output) = speedTarget;
     reset();
 }
 
@@ -34,7 +35,6 @@ void FollowTheCarrotTracker::reset() {
   lastReading = {0,0,0,0,0,0};
   error = {0,0,0,0,0,0};
   output = {0,0};
-  std::get<0>(output) = speedTarget;
 }
 
 void FollowTheCarrotTracker::disable(bool iisDisabled) {

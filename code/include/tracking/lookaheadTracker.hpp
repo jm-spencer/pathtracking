@@ -18,6 +18,8 @@ public:
 
   std::array<double,N> getGoalPoint(double robotx, double roboty, double effectiveLookaheadSqr);
 
+  std::array<double,N> globalToLocalCoords(const std::array<double,N> &point, const std::array<double,6> &basis);
+
 protected:
   double lookaheadDist;
   double lookaheadDistSqr;
