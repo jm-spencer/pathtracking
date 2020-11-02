@@ -57,7 +57,7 @@ public:
    * @return the last calculated output signal
    */
   virtual OUT getOutput() const {
-    return isDisabled() ? 0 : output;
+    return output;
   };
 
   /**
