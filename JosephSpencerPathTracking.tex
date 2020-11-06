@@ -150,7 +150,7 @@ Team 5225's method differs in two ways, a more precise estimation of displacemen
 \end{subequations}
 therefore, for a sufficiently small $\Delta \theta$, the two methods are equivalent. This was verified in testing, in which the best performing variation of both types of implementation performed extremely similarly.
 
-Both methods' implementations were found to perform best when modified to use an inertial measurement unit (IMU), a sensor which tracks heading, as the primary source of heading data. Heading data was also supplied by the tracking wheels when new heading data was not available from the IMU, as it does not supply a continuous stream of data. The two tracking wheels facing each direction were used in accordance to each method's displacement estimation in not only the direction tangential to the vehicle's heading, but also laterally.
+Both methods' implementations were found to perform best when modified to use an inertial measurement unit (IMU), instead of encoders to track heading. The two tracking wheels facing each direction were used in accordance to each method's displacement estimation in not only the direction tangential to the vehicle's heading, but also laterally.
 
 As stated previously, both method's best implementations performed very similarly. For this reason, as well as the modified Crowley method being computationally simpler than the Team 5225 method, the modified Crowley method was chosen for testing.
 
