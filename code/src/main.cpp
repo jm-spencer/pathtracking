@@ -2,6 +2,7 @@
 #include "odometry/odom4EncImu.hpp"
 #include "odometry/odom4EncImuSimp.hpp"
 #include "tracking/followTheCarrot.hpp"
+#include "tracking/purePursuit.hpp"
 
 void initialize() {
 		std::cout.setf(std::ios::fixed);
@@ -77,6 +78,9 @@ void opcontrol() {
 
 	//kP value of 2, desired speed of 100 cm/s, lookahead distance of 15 cm
 	FollowTheCarrotTracker ftcTracker(2, 100, 15);
+
+	// desired speed of 100 cm/s, lookahead distance of 15 cm
+	PurePursuitTracker ppTracker(100, 15);
 
 	imu->calibrate();
 	pros::delay(2100);
