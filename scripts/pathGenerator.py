@@ -36,9 +36,14 @@ def path(t):
   for t ranging from 0, to 1
   returns path point
   """
-  t *= len(parameters)
-  i = math.floor(t)
-  t_i = t % 1
+  if(t != 1):
+    t *= len(parameters)
+    i = math.floor(t)
+    t_i = t % 1
+  else:
+    i = len(parameters) - 1
+    t_i = 1
+
   return array('d',[hermite(parameters[i][0],t_i),
                     hermite(parameters[i][1],t_i),
                     math.atan2(dHermite(parameters[i][1],t_i),
@@ -47,9 +52,17 @@ def path(t):
 csvfile = open("path.csv", mode='w', encoding='utf-8')
 binfile = open("path", mode='wb')
 
+# record point p to both the binary and the csv file
+def record(p):
+  p.tofile(binfile)
+  for elem in p:
+    csvfile.write(str(elem) + ", ")
+  csvfile.write('\n')
+
 i = 0
 distsqr = pointSpacingDist ** 2
-lastPoint = array('d',[0,0])
+lastPoint = path(0)
+record(lastPoint)
 
 while i <= 1:
   point = path(i)
@@ -61,15 +74,12 @@ while i <= 1:
   if(tooClose):
     continue
 
-  point.tofile(binfile)
-
-  for elem in point:
-    csvfile.write(str(elem) + ", ")
-  csvfile.write('\n')
-
+  record(point)
 
   lastPoint[0] = point[0]
   lastPoint[1] = point[1]
+
+record(path(1))
 
 csvfile.close()
 binfile.close()
