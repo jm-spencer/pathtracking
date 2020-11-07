@@ -80,6 +80,7 @@ while i <= 1:
   lastPoint[1] = point[1]
 
 record(path(1))
+record(array('d', [math.nan, math.nan, math.nan]))
 
 csvfile.close()
 binfile.close()
