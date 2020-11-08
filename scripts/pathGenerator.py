@@ -3,14 +3,20 @@ from array import array
 import math
 
 # tunable values
-pointSpacingDist = 1
+pointSpacingDist = 5
 tStep = 0.0001
 
 # i_1 = curve#; i_2 = var#; i_3 = param#
 parameters = [
-  [[0,10],[0,0]],
-  [[10,10],[10,0]],
-  [[20,0],[0,-10]]
+  [[0  , 100], [0  ,  0  ]],
+  [[200, 200], [0  ,  0  ]],
+  [[225, 0  ], [150,  250]],
+  [[75 , 0  ], [150, -250]],
+  [[125, 0  ], [50 , -150]],
+  [[50 , 0  ], [50 ,  150]],
+  [[50 , 0  ], [150,  150]],
+  [[0  , 0  ], [150, -150]],
+  [[0  , 200], [0  ,  0  ]]
 ]
 
 # given a hermite curve h defined by params, return h(t)
