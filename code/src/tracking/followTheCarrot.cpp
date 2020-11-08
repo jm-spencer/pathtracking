@@ -11,7 +11,7 @@ std::tuple<double,double> FollowTheCarrotTracker::step(std::array<double,6> irea
   if(!disabled) {
     std::copy(ireading.begin(), ireading.end(), lastReading.begin());
 
-    std::array<double,2> goalPoint = getGoalPoint(ireading[0], ireading[1]);
+    std::array<double,3> goalPoint = getGoalPoint(ireading[0], ireading[1]);
     error[0] = goalPoint[0] - ireading[0];
     error[1] = goalPoint[1] - ireading[1];
 
