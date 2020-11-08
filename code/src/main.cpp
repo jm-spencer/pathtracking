@@ -85,7 +85,7 @@ void opcontrol() {
 	imu->calibrate();
 	pros::delay(2100);
 
-	std::ofstream positionTelemFile("usd/telem/path1.csv");
+	std::ofstream positionTelemFile("/usd/telem/path1.csv");
 
 /*
 	auto odom2 = std::make_shared<Odom4EncImu>(//OdomVals{33.81375, 27.6225},
@@ -113,7 +113,7 @@ void opcontrol() {
 	);
 */
 
-  auto pathFile = std::make_shared<kappa::BinFileInput<double,3>>("usd/paths/path1");
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path1");
 
 /*
 	pros::Task odomTask2([&]{
