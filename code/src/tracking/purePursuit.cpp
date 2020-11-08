@@ -8,10 +8,20 @@ PurePursuitTracker::PurePursuitTracker(double ispeedTarget, double ilookaheadDis
 }
 
 std::tuple<double,double> PurePursuitTracker::step(std::array<double,6> ireading) {
+  if(finished) {
+    return {0,0};
+  }
+
   if(!disabled) {
     std::copy(ireading.begin(), ireading.end(), lastReading.begin());
 
     std::array<double,3> &&goalPoint = globalToLocalCoords(getGoalPoint(ireading[0], ireading[1]), ireading);
+
+    if (std::isnan(goalPoint[0])) {
+      finished = true;
+      return {0,0};
+    }
+
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
     std::get<1>(output) = (2 * goalPoint[1] * speedTarget) / (lookaheadDistSqr);
@@ -21,9 +31,7 @@ std::tuple<double,double> PurePursuitTracker::step(std::array<double,6> ireading
 }
 
 bool PurePursuitTracker::isSettled() {
-  return false;
-  // Needs implementation in path generator. Possibly use a point defined
-  // as NaN to signify end of path.
+  return finished;
 }
 
 void PurePursuitTracker::reset() {

@@ -8,10 +8,20 @@ FollowTheCarrotTracker::FollowTheCarrotTracker(double ikP, double ispeedTarget, 
 }
 
 std::tuple<double,double> FollowTheCarrotTracker::step(std::array<double,6> ireading) {
+  if(finished) {
+    return {0,0};
+  }
+
   if(!disabled) {
     std::copy(ireading.begin(), ireading.end(), lastReading.begin());
 
-    std::array<double,3> goalPoint = getGoalPoint(ireading[0], ireading[1]);
+    std::array<double,3> &&goalPoint = getGoalPoint(ireading[0], ireading[1]);
+
+    if (std::isnan(goalPoint[0])) {
+      finished = true;
+      return {0,0};
+    }
+
     error[0] = goalPoint[0] - ireading[0];
     error[1] = goalPoint[1] - ireading[1];
 
@@ -23,9 +33,7 @@ std::tuple<double,double> FollowTheCarrotTracker::step(std::array<double,6> irea
 }
 
 bool FollowTheCarrotTracker::isSettled() {
-  return false;
-  // Needs implementation in path generator. Possibly use a point defined
-  // as NaN to signify end of path.
+  return finished;
 }
 
 void FollowTheCarrotTracker::reset() {
