@@ -85,6 +85,8 @@ void opcontrol() {
 	imu->calibrate();
 	pros::delay(2100);
 
+	std::ofstream positionTelemFile("usd/telem/path1.csv");
+
 /*
 	auto odom2 = std::make_shared<Odom4EncImu>(//OdomVals{33.81375, 27.6225},
 		std::make_unique<okapi::PassthroughFilter>(),
@@ -96,9 +98,9 @@ void opcontrol() {
 	);
 */
 	auto odom = std::make_shared<Odom4EncImuSimp>(//OdomVals{33.81375, 27.6225},
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_unique<okapi::PassthroughFilter>(),
-		std::make_unique<okapi::PassthroughFilter>(),
+		std::make_unique<okapi::EmaFilter>(.65),
+		std::make_unique<okapi::EmaFilter>(.65),
+		std::make_unique<okapi::EmaFilter>(.65),
 		std::make_shared<kappa::ArrayConsolidator<double,5>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
 			lEnc, bEnc, rEnc, fEnc, imu
 		})
@@ -110,6 +112,8 @@ void opcontrol() {
 			})
 	);
 */
+
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,3>>("usd/paths/path1");
 
 /*
 	pros::Task odomTask2([&]{
@@ -126,8 +130,15 @@ void opcontrol() {
 		auto t = pros::millis();
 
 		while(true){
-			odom->step();
-			pros::Task::delay_until(&t, 10);
+			auto &&pos = odom->step();
+
+			positionTelemFile << pros::millis();
+	    for(std::size_t i = 0; i < 6; i++){
+	      positionTelemFile << ", " << pos[i];
+	    }
+	    positionTelemFile << std::endl;
+
+			pros::Task::delay_until(&t, 8);
 		}
 	}, "Odom Task");
 /*
@@ -145,11 +156,14 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
+	ppTracker.setTarget(pathFile);
+
 	while(true){
 
-		chassis->set({100  * controller.getAnalog(okapi::ControllerAnalog::rightY), // Maximum linear speed, 100 cm/s
-									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)}); // Maximum angular velocity, 5.5 rad/s
+		chassis->set(ppTracker.step(odom->get()));
 
-		pros::Task::delay_until(&t, 10);
+		std::cout << ppTracker.isSettled() << "\n";
+
+		pros::Task::delay_until(&t, 50);
 	}
 }
