@@ -36,4 +36,12 @@ ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
 ax.grid()
 
 fig.savefig("analysis/path1Image.png")
+
+lastDistsqr = float('inf')
+lastJ = 0
+error = []
+for i in range(len(robot[0])):
+  for j in range(lastJ,len(path[0])):
+    pass
+
 plt.show()
