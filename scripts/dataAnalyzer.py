@@ -55,5 +55,5 @@ ax.plot(columns[0], columns[1], 'r')
 ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
 ax.grid()
 
-fig.savefig("pathImage.png")
+fig.savefig("analysis/path1Image.png")
 plt.show()
