@@ -44,23 +44,36 @@ fig, ax = plt.subplots()
 #ax.set_ylim(-61, 305)
 
 path = csvToColumns('paths/path1.csv')
-ax.plot(path[0], path[1], 'b')
+#ax.plot(path[0], path[1], 'b')
 
 robot = csvToColumns('paths/path2.csv')
-ax.plot(robot[0], robot[1], 'r')
+#ax.plot(robot[0], robot[1], 'r')
 
-ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
-ax.grid()
+#ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
+#ax.grid()
 
-fig.savefig("analysis/path1Image.png")
+#fig.savefig("analysis/path1Image.png")
 
-lastDistsqr = float('inf')
 lastJ = 0
 error = []
 for i in range(len(robot[0])):
-  for j in range(lastJ,len(path[0])):
-    pass
+  lastDist = float('inf')
+  print('starting search for %d at %d' % (i,lastJ))
+  for j in range(lastJ,len(path[0]) - 1):
+    dist = lineSeg2PointDist(path[0][j], path[1][j], path[0][j+1], path[1][j+1], robot[0][i], robot[1][i])
+    if(abs(dist) > abs(lastDist)):
+      error.append(lastDist)
+      print('min dist found  for %d at %d' % (i,j))
+      break
+    else:
+      lastDist = dist
+      lastJ = j
+      print('still looking   for %d at %d' % (i,j))
+  if lastJ == len(path[0]) - 2:
+    error.append(lastDist)
+    print('end of path')
 
-print(lineSeg2PointDist(3,-4,20,4,0,0))
+print(error)
+ax.plot(range(len(error)), error, 'b')
 
 plt.show()
