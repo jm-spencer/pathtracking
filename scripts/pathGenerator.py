@@ -8,6 +8,7 @@ tStep = 0.0001
 
 # i_1 = curve#; i_2 = var#; i_3 = param#
 parameters = [
+  [[0  , 0  ], [0  , 0  ]],
   [[0  , 0  ], [0  , 0  ]]
 ]
 
