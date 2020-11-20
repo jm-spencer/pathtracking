@@ -14,3 +14,4 @@ code/temp.log
 code/temp.errors
 code/*.ini
 code/.d/
+code/.cache/
