@@ -8,6 +8,7 @@ template<> std::array<double,2> LookaheadTracker<2>::getGoalPoint(double robotx,
   if(c < 0){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
+    waypointIndex++;
     return getGoalPoint(robotx, roboty, effectiveLookaheadSqr);
   }
 
@@ -19,8 +20,12 @@ template<> std::array<double,2> LookaheadTracker<2>::getGoalPoint(double robotx,
 
   double lambda = (sqrt(b * b - a * c) - b) / a;
 
-  return {activeWaypoint[0] + lambda * deltaPX,
-          activeWaypoint[1] + lambda * deltaPY};
+  if(std::isnan(lambda)){
+    return lastWaypoint;
+  }else{
+    return {activeWaypoint[0] + lambda * deltaPX,
+            activeWaypoint[1] + lambda * deltaPY};
+  }
 }
 
 template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx, double roboty, double effectiveLookaheadSqr){
@@ -31,6 +36,7 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
   if(c < 0){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
+    waypointIndex++;
     return getGoalPoint(robotx, roboty, effectiveLookaheadSqr);
   }
 
@@ -42,9 +48,15 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
 
   double lambda = (sqrt(b * b - a * c) - b) / a;
 
-  return {activeWaypoint[0] + lambda * deltaPX,
-          activeWaypoint[1] + lambda * deltaPY,
-          atan2(deltaPY, deltaPX)};
+  std::cout << waypointIndex << " G: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
+
+  if(std::isnan(lambda)){
+    return lastWaypoint;
+  }else{
+    return {activeWaypoint[0] + lambda * deltaPX,
+            activeWaypoint[1] + lambda * deltaPY,
+            atan2(deltaPY, deltaPX)};
+  }
 }
 
 template<> std::array<double,2> LookaheadTracker<2>::globalToLocalCoords(const std::array<double,2> &point, const std::array<double,6> &basis) {
@@ -64,6 +76,8 @@ template<> std::array<double,3> LookaheadTracker<3>::globalToLocalCoords(const s
 
   double sinTheta = sin(basis[2]);
   double cosTheta = cos(basis[2]);
+
+  std::cout << "G': (" << deltaXg * cosTheta + deltaYg * sinTheta << ", " << deltaYg * cosTheta - deltaXg * sinTheta << ")\t";
 
   return {deltaXg * cosTheta + deltaYg * sinTheta,
           deltaYg * cosTheta - deltaXg * sinTheta,

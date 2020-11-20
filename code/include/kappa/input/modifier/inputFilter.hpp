@@ -44,7 +44,7 @@ protected:
   std::shared_ptr<AbstractInput<T>> input{nullptr};
   std::unique_ptr<okapi::Filter> filter{nullptr};
 
-  T out{0};
+  T out;
 };
 
   extern template class InputFilter<double>;

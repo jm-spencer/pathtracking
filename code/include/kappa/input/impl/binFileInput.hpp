@@ -15,7 +15,7 @@ public:
   /**
    * Opens a binary file of T values. For each iteration, it takes N values
    * and passes it as an array of values
-   * 
+   *
    * @param filename path to file (make sure it begins with /usd/)
    */
   BinFileInput(const std::string &filename):
@@ -27,7 +27,7 @@ public:
 
   /**
    * gets values from the file
-   * 
+   *
    * @return values
    */
   virtual const std::array<T,N> &get() override {
@@ -37,7 +37,7 @@ public:
 
   /**
    * gets previous values, without getting new values from the file
-   * 
+   *
    * @returns values
    */
   virtual const std::array<T,N> &getValue() const override {
@@ -46,7 +46,7 @@ public:
 
 protected:
   std::ifstream file;
-  std::array<T,N> value{0};
+  std::array<T,N> value;
   bool finished{false};
 };
 

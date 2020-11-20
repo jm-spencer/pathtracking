@@ -3,7 +3,6 @@
 
 PurePursuitTracker::PurePursuitTracker(double ispeedTarget, double ilookaheadDist):
   speedTarget(ispeedTarget), LookaheadTracker(ilookaheadDist) {
-    std::get<0>(output) = speedTarget;
     reset();
 }
 
@@ -24,8 +23,12 @@ std::tuple<double,double> PurePursuitTracker::step(std::array<double,6> ireading
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
-    std::get<1>(output) = (2 * goalPoint[1] * speedTarget) / (lookaheadDistSqr);
+    output = {speedTarget, (2 * goalPoint[1] * ireading[3]) / (lookaheadDistSqr)};
+  } else {
+    output = {0,0};
   }
+
+  std::cout << "<" << std::get<0>(output) << ", " << std::get<1>(output) << ">\n";
 
   return output;
 }
@@ -45,11 +48,4 @@ void PurePursuitTracker::reset() {
 
 void PurePursuitTracker::disable(bool iisDisabled) {
   disabled = iisDisabled;
-
-  if(disabled){
-    std::get<0>(output) = 0;
-    std::get<1>(output) = 0;
-  }else{
-    std::get<0>(output) = speedTarget;
-  }
 }

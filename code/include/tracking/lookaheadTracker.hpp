@@ -24,5 +24,7 @@ protected:
   double lookaheadDist;
   double lookaheadDistSqr;
 
+  double waypointIndex{0};
+
   std::array<double,N> lastWaypoint;
 };

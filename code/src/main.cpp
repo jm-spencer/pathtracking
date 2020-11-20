@@ -46,7 +46,7 @@ void opcontrol() {
 							std::make_shared<kappa::VPidSubController>(
 								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
 								std::make_shared<kappa::InputChartLogger<double>>(chart1, read1,
-									std::make_shared<kappa::InputDifferentiator<double>>(6000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
+									std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
 										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(1))
 									)
 								),
@@ -57,7 +57,7 @@ void opcontrol() {
 							std::make_shared<kappa::VPidSubController>(
 								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
 								std::make_shared<kappa::InputChartLogger<double>>(chart2, read2,
-									std::make_shared<kappa::InputDifferentiator<double>>(6000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
+									std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
 										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8, true))
 									)
 								),
@@ -130,7 +130,7 @@ void opcontrol() {
 		auto t = pros::millis();
 
 		while(true){
-			auto &&pos = odom->step();
+			auto pos = odom->step();
 
 			positionTelemFile << pros::millis();
 	    for(std::size_t i = 0; i < 6; i++){
@@ -159,10 +159,12 @@ void opcontrol() {
 	ppTracker.setTarget(pathFile);
 
 	while(true){
+		auto pos = odom->get();
+		std::cout << "(" << pos[0] << ", " << pos[1] << ")\t";
 
-		chassis->set(ppTracker.step(odom->get()));
+		chassis->set(ppTracker.step(pos));
 
-		std::cout << ppTracker.isSettled() << "\n";
+		//std::cout << ppTracker.isSettled() << "\n";
 
 		pros::Task::delay_until(&t, 50);
 	}

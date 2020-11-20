@@ -15,7 +15,7 @@ Odom4EncImu::Odom4EncImu(
 const std::array<double,6> &Odom4EncImu::step() {
   const std::array<double,5> &in = input->get();
 
-  double dT = pros::millis() - lastIn[5];
+  double dT = 0.001 * (pros::millis() - lastIn[5]);
 
   if(dT == 0) return pose;
 

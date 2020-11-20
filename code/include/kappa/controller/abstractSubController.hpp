@@ -65,11 +65,11 @@ public:
   virtual void reset() = 0;
 
 protected:
-  TARGET target{0};
-  IN lastReading{0};
-  IN error{0};
+  TARGET target;
+  IN lastReading;
+  IN error;
 
-  OUT output{0};
+  OUT output;
 
   std::shared_ptr<AbstractInput<IN>> input{nullptr};
   std::shared_ptr<AbstractOutput<OUT>> outputDevice{nullptr};

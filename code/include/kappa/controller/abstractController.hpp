@@ -13,12 +13,6 @@ class AbstractController : public AbstractOutput<TARGET> {
 public:
 
   /**
-   * A controller, which uses some sensory data given by its input to determine
-   * an output that will drive the system to the desired target.
-   */
-//  AbstractController() = default;
-
-  /**
    * Sets the target for the controller
    *
    * @param itarget the new target

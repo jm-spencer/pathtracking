@@ -11,11 +11,11 @@ namespace kappa {
 template <std::size_t N>
 class FileInput : public SimpleInput<std::array<double,N>> {
 public:
-  
+
   /**
    * Opens a CSV file of doubles. For each iteration, it takes one row of values
    * and passes it as an array of values
-   * 
+   *
    * @param filename path to file (make sure it begins with /usd/)
    */
   FileInput(const std::string &filename):
@@ -27,7 +27,7 @@ public:
 
   /**
    * gets values from the file
-   * 
+   *
    * @return values
    */
   virtual const std::array<double,N> &get() override {
@@ -52,7 +52,7 @@ public:
 
   /**
    * gets previous values, without getting new values from the file
-   * 
+   *
    * @returns values
    */
   virtual const std::array<double,N> &getValue() const override {
@@ -62,7 +62,7 @@ public:
 protected:
   std::ifstream file;
   std::string line;
-  std::array<double,N> value{0};
+  std::array<double,N> value;
   std::size_t index, step;
   bool finished{false};
 };

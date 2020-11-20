@@ -59,8 +59,8 @@ public:
 protected:
   std::shared_ptr<AbstractOutput<std::array<T,N>>> output{nullptr};
   std::array<T,N> target;
-  T min{0};
-  T max{0};
+  T min;
+  T max;
 
   static std::array<T,N> &scaleArray(const std::array<T,N> &arr, std::array<T,N> &target, T scalar) {
     for(std::size_t i = 0; i < N; i++){

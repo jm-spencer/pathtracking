@@ -42,8 +42,8 @@ public:
 
 protected:
   std::shared_ptr<AbstractOutput<T>> output{nullptr};
-  T min{0};
-  T max{0};
+  T min;
+  T max;
 };
 
 extern template class OutputClamp<double>;
