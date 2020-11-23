@@ -4,6 +4,19 @@
 #include "tracking/followTheCarrot.hpp"
 #include "tracking/purePursuit.hpp"
 
+std::string createNumberedFilename(std::string &&root, std::string &&extension){
+	int i = 0;
+	while(true){
+		std::ifstream f(root + std::to_string(i) + extension);
+		if(!f.good()){
+			break;
+		}
+		i++;
+	}
+	return root + std::to_string(i) + extension;
+}
+
+
 void initialize() {
 		std::cout.setf(std::ios::fixed);
 }
@@ -85,7 +98,7 @@ void opcontrol() {
 	imu->calibrate();
 	pros::delay(2100);
 
-	std::ofstream positionTelemFile("/usd/telem/path1.csv");
+	std::ofstream positionTelemFile(createNumberedFilename("/usd/telem/path1.", ".csv"));
 
 /*
 	auto odom2 = std::make_shared<Odom4EncImu>(//OdomVals{33.81375, 27.6225},
