@@ -31,32 +31,33 @@ template<> std::array<double,2> LookaheadTracker<2>::getGoalPoint(double robotx,
 template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx, double roboty, double effectiveLookaheadSqr){
   double deltaRX = activeWaypoint[0] - robotx;
   double deltaRY = activeWaypoint[1] - roboty;
+
+  double deltaPX = activeWaypoint[0] - lastWaypoint[0];
+  double deltaPY = activeWaypoint[1] - lastWaypoint[1];
+
+  double b = deltaPX * deltaRX + deltaPY * deltaRY;
   double c = deltaRX * deltaRX + deltaRY * deltaRY - effectiveLookaheadSqr;
 
-  if(c < 0){
+  if(c < 0 || b < 0){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
     return getGoalPoint(robotx, roboty, effectiveLookaheadSqr);
   }
 
-  double deltaPX = activeWaypoint[0] - lastWaypoint[0];
-  double deltaPY = activeWaypoint[1] - lastWaypoint[1];
-
   double a = deltaPX * deltaPX + deltaPY * deltaPY;
-  double b = deltaPX * deltaRX + deltaPY * deltaRY;
 
   double lambda = (sqrt(b * b - a * c) - b) / a;
 
-  std::cout << waypointIndex << " G: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
-
   if(std::isnan(lambda)){
-    return lastWaypoint;
-  }else{
-    return {activeWaypoint[0] + lambda * deltaPX,
-            activeWaypoint[1] + lambda * deltaPY,
-            atan2(deltaPY, deltaPX)};
+    lambda = -1;
   }
+
+  std::cout << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
+
+  return {activeWaypoint[0] + lambda * deltaPX,
+          activeWaypoint[1] + lambda * deltaPY,
+          atan2(deltaPY, deltaPX)};
 }
 
 template<> std::array<double,2> LookaheadTracker<2>::globalToLocalCoords(const std::array<double,2> &point, const std::array<double,6> &basis) {

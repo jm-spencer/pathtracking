@@ -28,8 +28,6 @@ std::tuple<double,double> PurePursuitTracker::step(std::array<double,6> ireading
     output = {0,0};
   }
 
-  std::cout << "<" << std::get<0>(output) << ", " << std::get<1>(output) << ">\n";
-
   return output;
 }
 

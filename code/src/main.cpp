@@ -92,8 +92,8 @@ void opcontrol() {
 	//kP value of 2, desired speed of 100 cm/s, lookahead distance of 15 cm
 	FollowTheCarrotTracker ftcTracker(2, 100, 15);
 
-	// desired speed of 100 cm/s, lookahead distance of 15 cm
-	PurePursuitTracker ppTracker(100, 15);
+	// desired speed of 100 cm/s, lookahead distance of 30 cm
+	PurePursuitTracker ppTracker(75, 35);
 
 	imu->calibrate();
 	pros::delay(2100);
@@ -173,11 +173,11 @@ void opcontrol() {
 
 	while(true){
 		auto pos = odom->get();
-		std::cout << "(" << pos[0] << ", " << pos[1] << ")\t";
+		std::cout << "(" << pos[0] << ", " << pos[1] << ", " << pos[2] << ")\t";
 
 		chassis->set(ppTracker.step(pos));
 
-		//std::cout << ppTracker.isSettled() << "\n";
+		std::cout << "\n";
 
 		pros::Task::delay_until(&t, 50);
 	}
