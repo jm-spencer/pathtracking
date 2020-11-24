@@ -92,8 +92,8 @@ void opcontrol() {
 	//kP value of 2, desired speed of 100 cm/s, lookahead distance of 15 cm
 	FollowTheCarrotTracker ftcTracker(2, 100, 15);
 
-	// desired speed of 100 cm/s, lookahead distance of 30 cm
-	PurePursuitTracker ppTracker(75, 35);
+	// desired speed of 50 cm/s, lookahead distance of 50 cm
+	PurePursuitTracker ppTracker(50, 50);
 
 	imu->calibrate();
 	pros::delay(2100);
@@ -149,9 +149,9 @@ void opcontrol() {
 	    for(std::size_t i = 0; i < 6; i++){
 	      positionTelemFile << ", " << pos[i];
 	    }
-	    positionTelemFile << std::endl;
+	    positionTelemFile << "\n";
 
-			pros::Task::delay_until(&t, 8);
+			pros::Task::delay_until(&t, 10);
 		}
 	}, "Odom Task");
 /*
@@ -171,14 +171,15 @@ void opcontrol() {
 
 	ppTracker.setTarget(pathFile);
 
-	while(true){
-		auto pos = odom->get();
-		std::cout << "(" << pos[0] << ", " << pos[1] << ", " << pos[2] << ")\t";
+	while(!ppTracker.isSettled()){
+		chassis->set(ppTracker.step(odom->get()));
 
-		chassis->set(ppTracker.step(pos));
-
-		std::cout << "\n";
+		//std::cout << "\n";
 
 		pros::Task::delay_until(&t, 50);
 	}
+
+	odomTask.remove();
+
+	positionTelemFile.close();
 }

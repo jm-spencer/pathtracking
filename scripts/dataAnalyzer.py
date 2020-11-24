@@ -50,13 +50,13 @@ fig, ax = plt.subplots()
 path = csvToColumns('paths/path1.csv')
 ax.plot(path[0], path[1], 'b')
 
-robot = csvToColumns('paths/path1offset.csv')
-ax.plot(robot[0], robot[1], 'r')
+robot = csvToColumns('../data/PP50.50.path1.1.csv')
+ax.plot(robot[1], robot[2], 'r')
 
 ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
 ax.grid()
 
-#fig.savefig("analysis/path1Image.png")
+fig.savefig("analysis/PP50.50.path1.1.png")
 
 lastJ = 0
 error = []

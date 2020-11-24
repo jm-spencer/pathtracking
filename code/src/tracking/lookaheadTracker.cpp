@@ -53,7 +53,7 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
     lambda = -1;
   }
 
-  std::cout << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
+  //std::cout << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
 
   return {activeWaypoint[0] + lambda * deltaPX,
           activeWaypoint[1] + lambda * deltaPY,
@@ -78,7 +78,7 @@ template<> std::array<double,3> LookaheadTracker<3>::globalToLocalCoords(const s
   double sinTheta = sin(basis[2]);
   double cosTheta = cos(basis[2]);
 
-  std::cout << "G': (" << deltaXg * cosTheta + deltaYg * sinTheta << ", " << deltaYg * cosTheta - deltaXg * sinTheta << ")\t";
+  //std::cout << "G': (" << deltaXg * cosTheta + deltaYg * sinTheta << ", " << deltaYg * cosTheta - deltaXg * sinTheta << ")\t";
 
   return {deltaXg * cosTheta + deltaYg * sinTheta,
           deltaYg * cosTheta - deltaXg * sinTheta,
