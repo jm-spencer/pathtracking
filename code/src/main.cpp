@@ -50,38 +50,40 @@ void opcontrol() {
 
 	okapi::Controller controller;
 
-	auto chassis = //std::make_shared<kappa::TupleOutputLogger<double,double>>(6, " Chassis Commands ", " | ", "\n",
+	auto chassis =
 		std::make_shared<kappa::TwoAxisChassis>(10.4775, 37.62375,
 			std::make_shared<kappa::ArrayOutputClamp<double,2>>(-220, 220,
-				//std::make_shared<kappa::ArrayOutputLogger<double,2>>(6, " Motor Commands ", " | ", "\n",
-					std::make_shared<kappa::ArrayDistributor<double,2>>(std::initializer_list<std::shared_ptr<kappa::AbstractOutput<double>>>{
-						std::make_shared<kappa::OutputChartLogger<double>>(chart1, targ1,
-							std::make_shared<kappa::VPidSubController>(
-								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
-								std::make_shared<kappa::InputChartLogger<double>>(chart1, read1,
-									std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
-										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(1))
-									)
-								),
-								std::make_shared<kappa::VoltageMotor>(std::make_shared<okapi::MotorGroup>(std::initializer_list<okapi::Motor>({ 1, 2})))
-							)
-						),
-						std::make_shared<kappa::OutputChartLogger<double>>(chart2, targ2,
-							std::make_shared<kappa::VPidSubController>(
-								kappa::VPidSubController::Gains{90,25,49,620}, -12000, 12000,
-								std::make_shared<kappa::InputChartLogger<double>>(chart2, read2,
-									std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
-										std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8, true))
-									)
-								),
-								std::make_shared<kappa::VoltageMotor>(std::make_shared<okapi::MotorGroup>(std::initializer_list<okapi::Motor>({-8,-9})))
-							)
-						)
-					})
-				//)
+				std::make_shared<kappa::ArrayDistributor<double,2>>(std::initializer_list<std::shared_ptr<kappa::AbstractOutput<double>>>{
+					std::make_shared<kappa::OutputChartLogger<double>>(chart1, targ1,
+					std::make_shared<kappa::OutputLogger<double>>("LTV ","\t",
+						std::make_shared<kappa::VPidSubController>(
+							kappa::VPidSubController::Gains{60,50,50,620}, -12000, 12000,
+							std::make_shared<kappa::InputChartLogger<double>>(chart1, read1,
+							std::make_shared<kappa::InputLogger<double>>("LRV ","\t",
+								std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
+									std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(1))
+								)
+							)),
+							std::make_shared<kappa::VoltageMotor>(std::make_shared<okapi::MotorGroup>(std::initializer_list<okapi::Motor>({ 1, 2})))
+						))
+					),
+					std::make_shared<kappa::OutputChartLogger<double>>(chart2, targ2,
+					std::make_shared<kappa::OutputLogger<double>>("RTV ","\t",
+						std::make_shared<kappa::VPidSubController>(
+							kappa::VPidSubController::Gains{60,50,50,620}, -12000, 12000,
+							std::make_shared<kappa::InputChartLogger<double>>(chart2, read2,
+							std::make_shared<kappa::InputLogger<double>>("RRV ","\t",
+								std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
+									std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8, true))
+								)
+							)),
+							std::make_shared<kappa::VoltageMotor>(std::make_shared<okapi::MotorGroup>(std::initializer_list<okapi::Motor>({-8,-9})))
+						))
+					)
+				})
 			)
 		)
-	;//);
+	;
 
 	auto lEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(3,4), -M_PI * 6.985 / 360.0);
 	auto bEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(7,8), -M_PI * 6.985 / 360.0);
@@ -98,7 +100,7 @@ void opcontrol() {
 	imu->calibrate();
 	pros::delay(2100);
 
-	std::ofstream positionTelemFile(createNumberedFilename("/usd/telem/path1.", ".csv"));
+	//std::ofstream positionTelemFile(createNumberedFilename("/usd/telem/path1.", ".csv"));
 
 /*
 	auto odom2 = std::make_shared<Odom4EncImu>(//OdomVals{33.81375, 27.6225},
@@ -119,9 +121,11 @@ void opcontrol() {
 		})
 	);
 /*
-	auto sensorLog = std::make_shared<kappa::ArrayInputLogger<double,5>>(6, ", ", ", ", ", ",
-		std::make_shared<kappa::ArrayConsolidator<double,5>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
-				lEnc, bEnc, rEnc, fEnc, imu
+	auto sensorLog = std::make_shared<kappa::ArrayInputLogger<double,7>>(", ", ", ", ", ",
+		std::make_shared<kappa::ArrayConsolidator<double,7>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
+				lEnc, bEnc, rEnc, fEnc, imu,
+				std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(1)),
+				std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8,true))
 			})
 	);
 */
@@ -138,7 +142,7 @@ void opcontrol() {
 		}
 	}, "OdomTask1");
 */
-
+/*
 	pros::Task odomTask([&]{
 		auto t = pros::millis();
 
@@ -151,9 +155,12 @@ void opcontrol() {
 	    }
 	    positionTelemFile << "\n";
 
+			//std::cout << pos[3] << ", " << pos[5] << "\n";
+
 			pros::Task::delay_until(&t, 10);
 		}
 	}, "Odom Task");
+*/
 /*
 	pros::Task logTask([&]{
 		while(true){
@@ -172,14 +179,21 @@ void opcontrol() {
 	ppTracker.setTarget(pathFile);
 
 	while(!ppTracker.isSettled()){
-		chassis->set(ppTracker.step(odom->get()));
+		//chassis->set(ppTracker.step(odom->get()));
+		//chassis->set({75,2});
 
-		//std::cout << "\n";
+		chassis->set({100  * controller.getAnalog(okapi::ControllerAnalog::rightY), // Maximum linear speed, 100 cm/s
+									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)}); // Maximum angular velocity, 5.5 rad/s
+
+
+		std::cout << "\n";
 
 		pros::Task::delay_until(&t, 50);
 	}
+	chassis->set({0,0});
 
-	odomTask.remove();
 
-	positionTelemFile.close();
+	//odomTask.remove();
+
+	//positionTelemFile.close();
 }

@@ -34,6 +34,7 @@ public:
     input(iinput), filter(std::move(ifilter)), conversion(iconversion)
     {
       lastTime = pros::millis();
+      lastValue = input->get();
     }
 
   /**
