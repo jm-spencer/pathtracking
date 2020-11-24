@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import csv
 import math
+import sys
 
 def csvToColumns(filename):
   points = csv.reader(open(filename))
@@ -50,13 +51,13 @@ fig, ax = plt.subplots()
 path = csvToColumns('paths/path1.csv')
 ax.plot(path[0], path[1], 'b')
 
-robot = csvToColumns('../data/PP50.50.path1.1.csv')
+robot = csvToColumns(str(sys.argv[1]))
 ax.plot(robot[1], robot[2], 'r')
 
 ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
 ax.grid()
 
-fig.savefig("analysis/PP50.50.path1.1.png")
+fig.savefig("analysis/" + str(sys.argv[1]).split("/")[1][0:-4] + ".png")
 
 lastJ = 0
 error = []

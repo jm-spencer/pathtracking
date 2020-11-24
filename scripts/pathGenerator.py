@@ -92,8 +92,8 @@ def path(t):
                     math.atan2(dHermite(parameters[i][1], parameters[i+1][1], t_i),
                                dHermite(parameters[i][0], parameters[i+1][0],t_i))])
 
-csvfile = open("path.csv", mode='w', encoding='utf-8')
-binfile = open("path", mode='wb')
+csvfile = open("paths/" + str(sys.argv[1]) + ".csv", mode='w', encoding='utf-8')
+binfile = open("paths/" + str(sys.argv[1]), mode='wb')
 
 # record point p to both the binary and the csv file
 def record(p):
