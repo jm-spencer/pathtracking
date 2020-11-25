@@ -51,44 +51,40 @@ void opcontrol() {
 	okapi::Controller controller;
 
 	auto chassis =
-		std::make_shared<kappa::TwoAxisChassis>(10.4775, 37.62375,
+		std::make_shared<kappa::TwoAxisChassis>(10.682, 35.927,
 			std::make_shared<kappa::ArrayOutputClamp<double,2>>(-220, 220,
 				std::make_shared<kappa::ArrayDistributor<double,2>>(std::initializer_list<std::shared_ptr<kappa::AbstractOutput<double>>>{
 					std::make_shared<kappa::OutputChartLogger<double>>(chart1, targ1,
-					std::make_shared<kappa::OutputLogger<double>>("LTV ","\t",
 						std::make_shared<kappa::VPidSubController>(
 							kappa::VPidSubController::Gains{60,50,50,620}, -12000, 12000,
 							std::make_shared<kappa::InputChartLogger<double>>(chart1, read1,
-							std::make_shared<kappa::InputLogger<double>>("LRV ","\t",
 								std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
 									std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(1))
 								)
-							)),
+							),
 							std::make_shared<kappa::VoltageMotor>(std::make_shared<okapi::MotorGroup>(std::initializer_list<okapi::Motor>({ 1, 2})))
-						))
+						)
 					),
 					std::make_shared<kappa::OutputChartLogger<double>>(chart2, targ2,
-					std::make_shared<kappa::OutputLogger<double>>("RTV ","\t",
 						std::make_shared<kappa::VPidSubController>(
 							kappa::VPidSubController::Gains{60,50,50,620}, -12000, 12000,
 							std::make_shared<kappa::InputChartLogger<double>>(chart2, read2,
-							std::make_shared<kappa::InputLogger<double>>("RRV ","\t",
 								std::make_shared<kappa::InputDifferentiator<double>>(60000.0/900.0, std::make_unique<okapi::EmaFilter>(.65),
 									std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::IntegratedEncoder>(8, true))
 								)
-							)),
+							),
 							std::make_shared<kappa::VoltageMotor>(std::make_shared<okapi::MotorGroup>(std::initializer_list<okapi::Motor>({-8,-9})))
-						))
+						)
 					)
 				})
 			)
 		)
 	;
 
-	auto lEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(3,4), -M_PI * 6.985 / 360.0);
-	auto bEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(7,8), -M_PI * 6.985 / 360.0);
-	auto rEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(5,6),  M_PI * 6.985 / 360.0);
-	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  M_PI * 6.985 / 360.0);
+	auto lEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(3,4), -0.06069);
+	auto bEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(7,8), -0.06069);
+	auto rEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(5,6),  0.06069);
+	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  0.06069);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
 	//kP value of 2, desired speed of 100 cm/s, lookahead distance of 15 cm
@@ -100,7 +96,7 @@ void opcontrol() {
 	imu->calibrate();
 	pros::delay(2100);
 
-	//std::ofstream positionTelemFile(createNumberedFilename("/usd/telem/path1.", ".csv"));
+	std::ofstream positionTelemFile(createNumberedFilename("/usd/telem/path1.", ".csv"));
 
 /*
 	auto odom2 = std::make_shared<Odom4EncImu>(//OdomVals{33.81375, 27.6225},
@@ -142,7 +138,7 @@ void opcontrol() {
 		}
 	}, "OdomTask1");
 */
-/*
+
 	pros::Task odomTask([&]{
 		auto t = pros::millis();
 
@@ -160,7 +156,7 @@ void opcontrol() {
 			pros::Task::delay_until(&t, 10);
 		}
 	}, "Odom Task");
-*/
+
 /*
 	pros::Task logTask([&]{
 		while(true){
@@ -182,18 +178,13 @@ void opcontrol() {
 		//chassis->set(ppTracker.step(odom->get()));
 		//chassis->set({75,2});
 
-		chassis->set({100  * controller.getAnalog(okapi::ControllerAnalog::rightY), // Maximum linear speed, 100 cm/s
-									-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)}); // Maximum angular velocity, 5.5 rad/s
-
-
 		std::cout << "\n";
 
 		pros::Task::delay_until(&t, 50);
 	}
 	chassis->set({0,0});
 
+	odomTask.remove();
 
-	//odomTask.remove();
-
-	//positionTelemFile.close();
+	positionTelemFile.close();
 }
