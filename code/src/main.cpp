@@ -87,11 +87,11 @@ void opcontrol() {
 	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  0.06049);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
-	//kP value of 2, desired speed of 100 cm/s, lookahead distance of 15 cm
+	//kP value, desired speed, lookahead distance
 	FollowTheCarrotTracker ftcTracker(2, 100, 15);
 
-	// desired speed of 50 cm/s, lookahead distance of 50 cm
-	PurePursuitTracker ppTracker(50, 50);
+	// desired speed, lookahead distance
+	PurePursuitTracker ppTracker(50, 45); //10, 15, 25, 40, 60, 100
 
 	imu->calibrate();
 	pros::delay(2100);
@@ -151,8 +151,6 @@ void opcontrol() {
 	    }
 	    positionTelemFile << "\n";
 
-			//std::cout << pos[3] << ", " << pos[5] << "\n";
-
 			pros::Task::delay_until(&t, 10);
 		}
 	}, "Odom Task");
@@ -174,16 +172,16 @@ void opcontrol() {
 
 	ppTracker.setTarget(pathFile);
 
-	while(!ppTracker.isSettled() && odom->get()[2] > -15){
-		//chassis->set(ppTracker.step(odom->get()));
-		chassis->set({50,-2});
+	while(!ppTracker.isSettled()){
+		chassis->set(ppTracker.step(odom->get()));
+		//chassis->set({50,-2});
 
 		std::cout << "\n";
 
 		pros::Task::delay_until(&t, 50);
 	}
 
-	for(uint i = 0; i < 100; i++){
+	for(uint i = 0; i < 20; i++){
 		chassis->set({0,0});
 		pros::Task::delay_until(&t, 50);
 	}
@@ -191,5 +189,14 @@ void opcontrol() {
 	odomTask.remove();
 
 	positionTelemFile.close();
+
+	auto end1 = lv_chart_add_series(chart1, LV_COLOR_YELLOW);
+	auto end2 = lv_chart_add_series(chart2, LV_COLOR_YELLOW);
+
+	while(true){
+		lv_chart_set_next(chart1, end1, 100);
+		lv_chart_set_next(chart2, end2, 100);
+		pros::delay(100);
+	}
 
 }

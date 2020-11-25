@@ -57,7 +57,7 @@ ax.plot(robot[1], robot[2], 'r')
 ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
 ax.grid()
 
-fig.savefig("analysis/" + str(sys.argv[1]).split("/")[1][0:-4] + ".png")
+fig.savefig("analysis/" + str(sys.argv[1])[5:-4] + ".png")
 
 lastJ = 0
 error = []
