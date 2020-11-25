@@ -24,6 +24,7 @@ def csvToColumns(filename):
 
 def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
   projScalar = ((Rx - P1x)*(P2x - P1x) + (Ry - P1y)*(P2y - P1y)) / ((P2x - P1x)*(P2x - P1x) + (P2y - P1y)*(P2y - P1y))
+  #print("\n"+str(projScalar))
 
   distsqr = 0
   if projScalar >= 1:
@@ -33,6 +34,8 @@ def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
   else:
     distsqr = (P1x - Rx) ** 2 + (P1y - Ry) ** 2 - ((projScalar ** 2) * ((P2x - P1x) ** 2 + (P2y - P1y) ** 2))
 
+  #print(distsqr)
+
   cross = (P2x - P1x) * (Ry - P1y) - (P2y - P1y) * (Rx - P1x)
 
   # in the event the error is actually 0, rounding errors may cause distsqr to be negative,
@@ -40,7 +43,7 @@ def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
   if abs(distsqr) < 10 ** -12:
     distsqr = 0
 
-  return np.sign(cross) * math.sqrt(distsqr)
+  return math.sqrt(distsqr) if cross >= 0 else -1 * math.sqrt(distsqr)
 
 
 fig, ax = plt.subplots()
@@ -64,8 +67,10 @@ error = []
 for i in range(len(robot[0])):
   lastDist = float('inf')
   for j in range(lastJ, len(path[0]) - 1):
-    dist = lineSeg2PointDist(path[0][j], path[1][j], path[0][j+1], path[1][j+1], robot[0][i], robot[1][i])
+    dist = lineSeg2PointDist(path[0][j], path[1][j], path[0][j+1], path[1][j+1], robot[1][i], robot[2][i])
+    #print("%s (%s, %s)\t %s (%s,%s)\t dist = %s" % (i, robot[1][i], robot[2][i], j, path[0][j], path[1][j], dist))
     if(abs(dist) > abs(lastDist)):
+      #print("selecting %s:%s (%s)" % (i, lastJ, lastDist))
       error.append(lastDist)
       break
     else:
