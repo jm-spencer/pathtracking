@@ -51,7 +51,7 @@ void opcontrol() {
 	okapi::Controller controller;
 
 	auto chassis =
-		std::make_shared<kappa::TwoAxisChassis>(10.682, 35.927,
+		std::make_shared<kappa::TwoAxisChassis>(10.381, 38.754,
 			std::make_shared<kappa::ArrayOutputClamp<double,2>>(-220, 220,
 				std::make_shared<kappa::ArrayDistributor<double,2>>(std::initializer_list<std::shared_ptr<kappa::AbstractOutput<double>>>{
 					std::make_shared<kappa::OutputChartLogger<double>>(chart1, targ1,
@@ -81,10 +81,10 @@ void opcontrol() {
 		)
 	;
 
-	auto lEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(3,4), -0.06069);
-	auto bEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(7,8), -0.06069);
-	auto rEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(5,6),  0.06069);
-	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  0.06069);
+	auto lEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(3,4), -0.06049);
+	auto bEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(7,8), -0.06049);
+	auto rEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(5,6),  0.06049);
+	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  0.06049);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
 	//kP value of 2, desired speed of 100 cm/s, lookahead distance of 15 cm
@@ -174,17 +174,22 @@ void opcontrol() {
 
 	ppTracker.setTarget(pathFile);
 
-	while(!ppTracker.isSettled()){
+	while(!ppTracker.isSettled() && odom->get()[2] > -15){
 		//chassis->set(ppTracker.step(odom->get()));
-		//chassis->set({75,2});
+		chassis->set({50,-2});
 
 		std::cout << "\n";
 
 		pros::Task::delay_until(&t, 50);
 	}
-	chassis->set({0,0});
+
+	for(uint i = 0; i < 100; i++){
+		chassis->set({0,0});
+		pros::Task::delay_until(&t, 50);
+	}
 
 	odomTask.remove();
 
 	positionTelemFile.close();
+
 }
