@@ -1,8 +1,8 @@
 #include "tracking/ramsete.hpp"
 #include <cmath>
 
-RamseteTracker::RamseteTracker(double izeta, double ib, double ispeedTarget, double ilookaheadDist):
-  zeta(izeta), b(ib), speedTarget(ispeedTarget), LookaheadTracker(ilookaheadDist) {
+RamseteTracker::RamseteTracker(double izeta, double ib, double ilookaheadDist):
+  zeta(izeta), b(ib), LookaheadTracker(ilookaheadDist) {
     reset();
 }
 
@@ -54,11 +54,4 @@ void RamseteTracker::reset() {
 
 void RamseteTracker::disable(bool iisDisabled) {
   disabled = iisDisabled;
-
-  if(disabled){
-    std::get<0>(output) = 0;
-    std::get<1>(output) = 0;
-  }else{
-    std::get<0>(output) = speedTarget;
-  }
 }
