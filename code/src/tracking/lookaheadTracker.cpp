@@ -58,7 +58,7 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
 
   return {activeWaypoint[0] + lambda * deltaPX,
           activeWaypoint[1] + lambda * deltaPY,
-          atan2(deltaPY, deltaPX)};
+          (lambda + 1) * activeWaypoint[2] - lambda * lastWaypoint[2]};
 }
 
 template<> std::array<double,2> LookaheadTracker<2>::globalToLocalCoords(const std::array<double,2> &point, const std::array<double,6> &basis) {
