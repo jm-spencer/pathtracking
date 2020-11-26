@@ -1,8 +1,8 @@
 #include "tracking/ramsete.hpp"
 #include <cmath>
 
-RamseteTracker::RamseteTracker(double izeta, double ib, double ilookaheadDist):
-  zeta(izeta), b(ib), LookaheadTracker(ilookaheadDist) {
+RamseteTracker::RamseteTracker(double izeta, double ib, double ispeedTarget, double ilookaheadDist):
+  zeta(izeta), b(ib), speedTarget(ispeedTarget), LookaheadTracker(ilookaheadDist) {
     reset();
 }
 
@@ -14,7 +14,7 @@ std::tuple<double,double> RamseteTracker::step(std::array<double,6> ireading) {
   if(!disabled) {
     std::copy(ireading.begin(), ireading.end(), lastReading.begin());
 
-    std::array<double,6> &&goalPoint = getGoalPoint(ireading[0], ireading[1]);
+    std::array<double,4> &&goalPoint = getGoalPoint(ireading[0], ireading[1]);
 
     if (std::isnan(goalPoint[0])) {
       finished = true;
@@ -23,13 +23,15 @@ std::tuple<double,double> RamseteTracker::step(std::array<double,6> ireading) {
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
-    double k1 = 2 * zeta * sqrt(goalPoint[5] * goalPoint[5] + b * goalPoint[3] * goalPoint[3]);
+    double omega = speedTarget * goalPoint[3];
+
+    double k1 = 2 * zeta * sqrt(omega * omega + b * speedTarget * speedTarget);
     double dxcosdysin = (goalPoint[0] - ireading[0]) * cos(ireading[2]) + (goalPoint[1] - ireading[1]) * sin(ireading[2]);
     double dTheta = goalPoint[2] - ireading[2];
 
     output = {
-      goalPoint[3] * cos(dTheta) + k1 * dxcosdysin,
-      goalPoint[5] + b * goalPoint[3] * (sin(dTheta) / dTheta) * dxcosdysin + k1 * dTheta
+      speedTarget * cos(dTheta) + k1 * dxcosdysin,
+      omega + b * speedTarget * (sin(dTheta) / dTheta) * dxcosdysin + k1 * dTheta
     };
   } else {
     output = {0,0};

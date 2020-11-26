@@ -95,7 +95,7 @@ void opcontrol() {
 	PurePursuitTracker ppTracker(75, 35); //10, 15, 25, 35, 40, 60
 
 	// zeta, b, desired speed, lookahead distance
-	RamseteTracker ramseteTracker(0.5, 2, 25);
+	RamseteTracker ramseteTracker(0.5, 2, 75, 25);
 
 	imu->calibrate();
 	pros::delay(2100);
