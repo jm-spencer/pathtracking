@@ -96,7 +96,7 @@ void opcontrol() {
 	imu->calibrate();
 	pros::delay(2100);
 
-	std::ofstream positionTelemFile(createNumberedFilename("/usd/telem/path1.", ".csv"));
+	std::ofstream positionTelemFile(createNumberedFilename("/usd/telem/posData.", ".csv"));
 
 /*
 	auto odom2 = std::make_shared<Odom4EncImu>(//OdomVals{33.81375, 27.6225},

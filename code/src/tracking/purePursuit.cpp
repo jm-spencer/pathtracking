@@ -37,6 +37,7 @@ bool PurePursuitTracker::isSettled() {
 
 void PurePursuitTracker::reset() {
   target = nullptr;
+  finished = false;
   lastWaypoint = {0,0};
   activeWaypoint = {0,0};
   lastReading = {0,0,0,0,0,0};
@@ -46,4 +47,11 @@ void PurePursuitTracker::reset() {
 
 void PurePursuitTracker::disable(bool iisDisabled) {
   disabled = iisDisabled;
+
+  if(disabled){
+    std::get<0>(output) = 0;
+    std::get<1>(output) = 0;
+  }else{
+    std::get<0>(output) = speedTarget;
+  }
 }

@@ -25,8 +25,9 @@ std::tuple<double,double> FollowTheCarrotTracker::step(std::array<double,6> irea
     error[0] = goalPoint[0] - ireading[0];
     error[1] = goalPoint[1] - ireading[1];
 
-    std::get<1>(output) = kP * (atan2(error[1], error[0]) - ireading[2]);
-
+    output = {speedTarget, kP * (atan2(error[1], error[0]) - ireading[2])};
+  }else{
+    output = {0,0};
   }
 
   return output;
@@ -38,6 +39,7 @@ bool FollowTheCarrotTracker::isSettled() {
 
 void FollowTheCarrotTracker::reset() {
   target = nullptr;
+  finished = false;
   lastWaypoint = {0,0};
   activeWaypoint = {0,0};
   lastReading = {0,0,0,0,0,0};
