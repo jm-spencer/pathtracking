@@ -3,6 +3,7 @@
 #include "odometry/odom4EncImuSimp.hpp"
 #include "tracking/followTheCarrot.hpp"
 #include "tracking/purePursuit.hpp"
+#include "tracking/ramsete.hpp"
 
 std::string createNumberedFilename(std::string &&root, std::string &&extension){
 	int i = 0;
@@ -92,6 +93,9 @@ void opcontrol() {
 
 	// desired speed, lookahead distance
 	PurePursuitTracker ppTracker(75, 35); //10, 15, 25, 35, 40, 60
+
+	// zeta, b, desired speed, lookahead distance
+	RamseteTracker ramseteTracker(0.5, 2, 75, 25);
 
 	imu->calibrate();
 	pros::delay(2100);
