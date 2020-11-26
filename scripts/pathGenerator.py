@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from array import array
 import math
+import sys
 
 # tunable values
 pointSpacingDist = 5
@@ -71,6 +72,12 @@ def dHermite(params0, params1, t):
          (-6 * (t ** 2) + 6 * t) * params1[0] + \
          (3 * (t ** 2) - 2 * t) * params1[1]
 
+def d2Hermite(params0, params1, t):
+  return (12 * t - 6) * params0[0] + \
+         (6  * t - 4) * params0[1] + \
+         (-12* t + 6) * params1[0] + \
+         (6  * t - 2) * params1[1]
+
 # path fn can be modified by user to generate CSV and binary path file for any functionally defined path
 # this implimentation uses a parametric cubic hermite spline
 
@@ -87,10 +94,18 @@ def path(t):
     i = len(parameters) - 2
     t_i = 1
 
-  return array('d',[hermite(parameters[i][0], parameters[i+1][0], t_i),
-                    hermite(parameters[i][1], parameters[i+1][1], t_i),
-                    math.atan2(dHermite(parameters[i][1], parameters[i+1][1], t_i),
-                               dHermite(parameters[i][0], parameters[i+1][0],t_i))])
+  x   =   hermite(parameters[i][0], parameters[i+1][0], t_i)
+  y   =   hermite(parameters[i][1], parameters[i+1][1], t_i)
+  dx  =  dHermite(parameters[i][0], parameters[i+1][0], t_i)
+  dy  =  dHermite(parameters[i][1], parameters[i+1][1], t_i)
+  d2x = d2Hermite(parameters[i][0], parameters[i+1][0], t_i)
+  d2y = d2Hermite(parameters[i][1], parameters[i+1][1], t_i)
+
+  return array('d',[x,
+                    y,
+                    math.atan2(dy, dx),
+                    (dx * d2y - dy * d2x) / (dx ** 2 + dy ** 2) ** 1.5
+                    ])
 
 csvfile = open("paths/" + str(sys.argv[1]) + ".csv", mode='w', encoding='utf-8')
 binfile = open("paths/" + str(sys.argv[1]), mode='wb')
