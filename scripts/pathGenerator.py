@@ -6,13 +6,13 @@ import sys
 # tunable values
 pointSpacingDist = 5
 tStep = 0.0001
-
+"""
 # i_1 = curve#; i_2 = var#; i_3 = param#
 parameters = [
   [[0  , 0  ], [0  , 0  ]],
   [[0  , 0  ], [0  , 0  ]]
 ]
-
+"""
 """ # Path 1 data
 parameters = [
   [[0  , 200], [0  ,  0  ]],
@@ -101,8 +101,7 @@ def path(t):
   d2x = d2Hermite(parameters[i][0], parameters[i+1][0], t_i)
   d2y = d2Hermite(parameters[i][1], parameters[i+1][1], t_i)
 
-  return array('d',[x,
-                    y,
+  return array('d',[x, y,
                     math.atan2(dy, dx),
                     (dx * d2y - dy * d2x) / (dx ** 2 + dy ** 2) ** 1.5
                     ])
