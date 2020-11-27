@@ -2,7 +2,7 @@
 #include "kappa/api.hpp"
 #include "tracking/lookaheadTracker.hpp"
 
-class PurePursuitTracker: public LookaheadTracker<3> {
+class PurePursuitTracker: public LookaheadTracker<2> {
 public:
   PurePursuitTracker(double ispeedTarget, double ilookaheadDist);
 

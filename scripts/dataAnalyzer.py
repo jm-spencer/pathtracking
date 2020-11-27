@@ -51,7 +51,7 @@ fig, ax = plt.subplots()
 #ax.set_xlim(-61, 305)
 #ax.set_ylim(-61, 305)
 
-path = csvToColumns('paths/path1.csv')
+path = csvToColumns('paths/path1.4.csv')
 ax.plot(path[0], path[1], 'b')
 
 robot = csvToColumns(str(sys.argv[1]))

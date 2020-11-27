@@ -2,7 +2,7 @@
 #include "kappa/api.hpp"
 #include "tracking/lookaheadTracker.hpp"
 
-class FollowTheCarrotTracker: public LookaheadTracker<3> {
+class FollowTheCarrotTracker: public LookaheadTracker<2> {
 public:
   FollowTheCarrotTracker(double ikP, double ispeedTarget, double ilookaheadDist);
 

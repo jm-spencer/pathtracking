@@ -95,7 +95,7 @@ void opcontrol() {
 	FollowTheCarrotTracker ftcTracker(2, 100, 15);
 
 	// desired speed, lookahead distance
-	PurePursuitTracker ppTracker(75, 35); //10, 15, 25, 35, 40, 60
+	PurePursuitTracker ppTracker(100, 40); //10, 20, 30, 40, 50, 60
 
 	// zeta, b, desired speed, lookahead distance
 	RamseteTracker ramseteTracker(0.5, 2, 75, 25);
@@ -140,7 +140,7 @@ void opcontrol() {
 	);
 */
 
-  auto pathFile = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path1");
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
 
 /*
 	pros::Task odomTask2([&]{
