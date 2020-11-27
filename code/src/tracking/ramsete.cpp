@@ -26,7 +26,11 @@ std::tuple<double,double> RamseteTracker::step(std::array<double,6> ireading) {
     double omega = speedTarget * goalPoint[3];
 
     double k1 = 2 * zeta * sqrt(omega * omega + b * speedTarget * speedTarget);
-    double dTheta = goalPoint[2] - ireading[2];
+    double dTheta = std::fmod(goalPoint[2] - ireading[2], 2 * M_PI);
+
+    if(std::abs(dTheta) > M_PI){
+      dTheta += dTheta > 0 ? -2 * M_PI : 2 * M_PI;
+    }
 
     output = {
       speedTarget * cos(dTheta) + k1 * ((goalPoint[0] - ireading[0]) * cos(ireading[2]) + (goalPoint[1] - ireading[1]) * sin(ireading[2])),
