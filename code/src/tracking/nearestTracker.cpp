@@ -30,7 +30,7 @@ template<> std::array<double,3> NearestTracker<3>::getGoalPoint(double robotx, d
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / (deltaPX * deltaPX + deltaPY * deltaPY);
 
-  if(projScalar > 1){
+  if(projScalar > 1 || std::isnan(projScalar)){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;

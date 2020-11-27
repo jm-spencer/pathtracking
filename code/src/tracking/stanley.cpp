@@ -23,12 +23,17 @@ std::tuple<double,double> StanleyTracker::step(std::array<double,6> ireading){
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
+    double dTheta = std::fmod(goalPoint[2] - ireading[2], 2 * M_PI);
+
+    if(std::abs(dTheta) > M_PI){
+      dTheta += dTheta > 0 ? -2 * M_PI : 2 * M_PI;
+    }
+
     double e = sqrt((goalPoint[0] - ireading[0]) * (goalPoint[0] - ireading[0]) + (goalPoint[1] - ireading[1]) * (goalPoint[1] - ireading[1]));
 
     output = {speedTarget,
               (ireading[3] / l) *
-                tan(goalPoint[2] - ireading[2] +
-                  atan(k * e / ireading[3]))};
+                tan(dTheta + atan(k * e / ireading[3]))};
   } else {
     output = {0,0};
   }
