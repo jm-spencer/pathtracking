@@ -1,4 +1,5 @@
 #include "tracking/nearestTracker.hpp"
+#include <algorithm>
 
 template<> std::array<double,2> NearestTracker<2>::getGoalPoint(double robotx, double roboty){
   double deltaRX = activeWaypoint[0] - robotx;
@@ -34,6 +35,18 @@ template<> std::array<double,3> NearestTracker<3>::getGoalPoint(double robotx, d
     activeWaypoint = pathFile->get();
     waypointIndex++;
     return getGoalPoint(robotx, roboty);
+  }
+
+  double theta;
+  // if the angle "wraps around" from +PI to -PI over this path segment, theta must be adjusted
+  if(std::abs(activeWaypoint[2]) > M_PI_2 && (activeWaypoint[2] > 0 != lastWaypoint[2] > 0)){
+    if(lastWaypoint[2] > 0){
+      theta = std::clamp(projScalar, 0.0, 1.0) * (activeWaypoint[2] + M_2_PI) + (1 - std::clamp(projScalar, 0.0, 1.0)) * lastWaypoint[2];
+    }else{
+      theta = std::clamp(projScalar, 0.0, 1.0) * activeWaypoint[2] + (1 - std::clamp(projScalar, 0.0, 1.0)) * (lastWaypoint[2] + M_2_PI);
+    }
+  }else{
+    theta = std::clamp(projScalar, 0.0, 1.0) * activeWaypoint[2] + (1 - std::clamp(projScalar, 0.0, 1.0)) * lastWaypoint[2];
   }
 
   return {lastWaypoint[0] + projScalar * deltaPX,
