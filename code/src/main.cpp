@@ -92,10 +92,10 @@ void opcontrol() {
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
 	// kP value (hz), desired speed (cm/s), lookahead distance (cm)
-	FollowTheCarrotTracker ftcTracker(10, 100, 30);
+	FollowTheCarrotTracker ftcTracker(10, 100, 40);
 
 	// desired speed (cm/s), lookahead distance (cm)
-	PurePursuitTracker ppTracker(100, 40); //10, 20, 30, 40, 50, 60
+	PurePursuitTracker ppTracker(100, 40);
 
 	// zeta (unitless), b (1/cm^2), desired speed (cm/s), lookahead distance (cm)
 	RamseteTracker ramseteTracker(0.5, 2, 75, 25);
@@ -212,8 +212,8 @@ void opcontrol() {
 	auto end2 = lv_chart_add_series(chart2, LV_COLOR_YELLOW);
 
 	while(true){
-		lv_chart_set_next(chart1, end1, 100);
-		lv_chart_set_next(chart2, end2, 100);
+		lv_chart_set_next(chart1, end1, 0);
+		lv_chart_set_next(chart2, end2, 0);
 		pros::delay(100);
 	}
 
