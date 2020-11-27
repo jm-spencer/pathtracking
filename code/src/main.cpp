@@ -1,9 +1,12 @@
 #include "main.h"
 #include "odometry/odom4EncImu.hpp"
 #include "odometry/odom4EncImuSimp.hpp"
+
 #include "tracking/followTheCarrot.hpp"
 #include "tracking/purePursuit.hpp"
 #include "tracking/ramsete.hpp"
+#include "tracking/stanley.hpp"
+#include "tracking/vectorPursuit.hpp"
 
 std::string createNumberedFilename(std::string &&root, std::string &&extension){
 	int i = 0;
@@ -88,7 +91,7 @@ void opcontrol() {
 	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  0.06049);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
-	//kP value, desired speed, lookahead distance
+	// kP value, desired speed, lookahead distance
 	FollowTheCarrotTracker ftcTracker(2, 100, 15);
 
 	// desired speed, lookahead distance
@@ -96,6 +99,13 @@ void opcontrol() {
 
 	// zeta, b, desired speed, lookahead distance
 	RamseteTracker ramseteTracker(0.5, 2, 75, 25);
+
+	// k gain, emulated vehicle length, desired speed
+	StanleyTracker stanleyTracker(10, 20, 75);
+
+	// k gain, desired speed, lookahead distance
+	VectorPursuitTracker vpTracker(1, 75, 35);
+
 
 	imu->calibrate();
 	pros::delay(2100);
