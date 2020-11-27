@@ -27,7 +27,7 @@ std::tuple<double,double> VectorPursuitTracker::step(std::array<double,6> ireadi
     double cosTheta = cos(ireading[2]);
     double sinTheta = sin(ireading[2]);
 
-    double screwx, screwy;
+    double vscrewx, vscrewy;
 
     if(goalPointLocal[1] != 0){
 
@@ -35,18 +35,18 @@ std::tuple<double,double> VectorPursuitTracker::step(std::array<double,6> ireadi
 
       double r2$ = ((k * phi) / ((k-1) * phi + goalPoint[2] - ireading[2])) * (lookaheadDistSqr / 2 * goalPointLocal[1]);
 
-      screwx = ireading[0] - r2$ * cosTheta;
-      screwy = ireading[1] + r2$ * sinTheta;
+      vscrewx = -r2$ * cosTheta;
+      vscrewy = -r2$ * sinTheta;
 
     }else{
 
-      screwx = ireading[0] - k * ((goalPoint[1] - ireading[1]) / (goalPoint[2] - ireading[2]));
-      screwy = ireading[1] + k * ((goalPoint[0] - ireading[0]) / (goalPoint[2] - ireading[2]));
+      vscrewx = -k * ((goalPoint[1] - ireading[1]) / (goalPoint[2] - ireading[2]));
+      vscrewy = -k * ((goalPoint[0] - ireading[0]) / (goalPoint[2] - ireading[2]));
 
     }
 
     output = {speedTarget,
-              ireading[3] / (ireading[1] * cosTheta - ireading[0] * sinTheta + screwx * sinTheta - screwy * cosTheta)};
+              ireading[3] / (vscrewy * cosTheta + vscrewx * sinTheta)};
 
   } else {
     output = {0,0};
