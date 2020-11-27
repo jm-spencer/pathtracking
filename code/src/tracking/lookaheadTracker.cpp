@@ -25,6 +25,8 @@ template<> std::array<double,2> LookaheadTracker<2>::getGoalPoint(double robotx,
     lambda = -1;
   }
 
+  // std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
+
   return {activeWaypoint[0] + lambda * deltaPX,
           activeWaypoint[1] + lambda * deltaPY};
 }
@@ -54,7 +56,7 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
     lambda = -1;
   }
 
-  //std::cout << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
+  // std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
 
   double theta;
   // if the angle "wraps around" from +PI to -PI over this path segment, theta must be adjusted
@@ -98,7 +100,7 @@ template<> std::array<double,4> LookaheadTracker<4>::getGoalPoint(double robotx,
     lambda = -1;
   }
 
-  //std::cout << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
+  // std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
 
   double theta;
   // if the angle "wraps around" from +PI to -PI over this path segment, theta must be adjusted

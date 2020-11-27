@@ -14,7 +14,7 @@ std::tuple<double,double> PurePursuitTracker::step(std::array<double,6> ireading
   if(!disabled) {
     std::copy(ireading.begin(), ireading.end(), lastReading.begin());
 
-    std::array<double,3> &&goalPoint = globalToLocalCoords(getGoalPoint(ireading[0], ireading[1]), ireading);
+    std::array<double,2> &&goalPoint = globalToLocalCoords(getGoalPoint(ireading[0], ireading[1]), ireading);
 
     if (std::isnan(goalPoint[0])) {
       finished = true;

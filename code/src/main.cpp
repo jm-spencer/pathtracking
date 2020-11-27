@@ -91,19 +91,19 @@ void opcontrol() {
 	auto fEnc = std::make_shared<kappa::OkapiInput>(std::make_shared<okapi::ADIEncoder>(1,2),  0.06049);
 	auto imu  = std::make_shared<kappa::ImuInput>(15);
 
-	// kP value, desired speed, lookahead distance
-	FollowTheCarrotTracker ftcTracker(2, 100, 15);
+	// kP value (hz), desired speed (cm/s), lookahead distance (cm)
+	FollowTheCarrotTracker ftcTracker(10, 100, 30);
 
-	// desired speed, lookahead distance
+	// desired speed (cm/s), lookahead distance (cm)
 	PurePursuitTracker ppTracker(100, 40); //10, 20, 30, 40, 50, 60
 
-	// zeta, b, desired speed, lookahead distance
+	// zeta (unitless), b (1/cm^2), desired speed (cm/s), lookahead distance (cm)
 	RamseteTracker ramseteTracker(0.5, 2, 75, 25);
 
-	// k gain, emulated vehicle length, desired speed
+	// k gain (hz), emulated vehicle length (cm), desired speed (cm/s)
 	StanleyTracker stanleyTracker(10, 20, 75);
 
-	// k gain, desired speed, lookahead distance
+	// k gain (unitless), desired speed (cm/s), lookahead distance (cm)
 	VectorPursuitTracker vpTracker(1, 75, 35);
 
 
@@ -178,12 +178,12 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
-	ppTracker.setTarget(pathFile);
+	ftcTracker.setTarget(pathFile);
 
-	while(!ppTracker.isSettled()){
+	while(!ftcTracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(ppTracker.step(pos));
+		chassis->set(ftcTracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();
