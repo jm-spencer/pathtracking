@@ -58,21 +58,15 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
 
   // std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
 
-  double theta;
-  // if the angle "wraps around" from +PI to -PI over this path segment, theta must be adjusted
-  if(std::abs(activeWaypoint[2]) > M_PI_2 && (activeWaypoint[2] > 0 != lastWaypoint[2] > 0)){
-    if(lastWaypoint[2] > 0){
-      theta = (lambda + 1) * (activeWaypoint[2] + M_2_PI) - lambda * lastWaypoint[2];
-    }else{
-      theta = (lambda + 1) * activeWaypoint[2] - lambda * (lastWaypoint[2] + M_2_PI);
-    }
-  }else{
-    theta = (lambda + 1) * activeWaypoint[2] - lambda * lastWaypoint[2];
+  double deltaPTheta = std::fmod(activeWaypoint[2] - lastWaypoint[2], 2 * M_PI);
+
+  if(std::abs(deltaPTheta) > M_PI){
+    deltaPTheta += deltaPTheta > 0 ? -2 * M_PI : 2 * M_PI;
   }
 
   return {activeWaypoint[0] + lambda * deltaPX,
           activeWaypoint[1] + lambda * deltaPY,
-          theta};
+          activeWaypoint[2] + std::clamp(lambda, -1.0, 0.0) * deltaPTheta};
 }
 
 template<> std::array<double,4> LookaheadTracker<4>::getGoalPoint(double robotx, double roboty, double effectiveLookaheadSqr){
@@ -102,21 +96,15 @@ template<> std::array<double,4> LookaheadTracker<4>::getGoalPoint(double robotx,
 
   // std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
 
-  double theta;
-  // if the angle "wraps around" from +PI to -PI over this path segment, theta must be adjusted
-  if(std::abs(activeWaypoint[2]) > M_PI_2 && (activeWaypoint[2] > 0 != lastWaypoint[2] > 0)){
-    if(lastWaypoint[2] > 0){
-      theta = (lambda + 1) * (activeWaypoint[2] + M_2_PI) - lambda * lastWaypoint[2];
-    }else{
-      theta = (lambda + 1) * activeWaypoint[2] - lambda * (lastWaypoint[2] + M_2_PI);
-    }
-  }else{
-    theta = (lambda + 1) * activeWaypoint[2] - lambda * lastWaypoint[2];
+  double deltaPTheta = std::fmod(activeWaypoint[2] - lastWaypoint[2], 2 * M_PI);
+
+  if(std::abs(deltaPTheta) > M_PI){
+    deltaPTheta += deltaPTheta > 0 ? -2 * M_PI : 2 * M_PI;
   }
 
   return {activeWaypoint[0] + lambda * deltaPX,
           activeWaypoint[1] + lambda * deltaPY,
-          theta,
+          activeWaypoint[2] + std::clamp(lambda, -1.0, 0.0) * deltaPTheta,
           (lambda + 1) * activeWaypoint[3] - lambda * lastWaypoint[3]};
 }
 
