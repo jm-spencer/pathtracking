@@ -145,6 +145,11 @@ double PurePursuitAdaptive2Tracker::getCurvature(double robotx, double roboty) {
     return getCurvature(robotx, roboty);
   }
 
+  if (std::isnan(activeCurvatureWaypoint[0])) {
+    finished = true;
+    return 0;
+  }
+
   double dTheta = std::abs(std::fmod(activeCurvatureWaypoint[2] - activeNearestWaypoint[2], 2*M_PI));
 
   if(dTheta > M_PI){
