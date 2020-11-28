@@ -2,8 +2,8 @@
 #include <algorithm>
 
 template<> std::array<double,2> NearestTracker<2>::getGoalPoint(double robotx, double roboty){
-  double deltaRX = activeWaypoint[0] - robotx;
-  double deltaRY = activeWaypoint[1] - roboty;
+  double deltaRX = robotx - lastWaypoint[0];
+  double deltaRY = roboty - lastWaypoint[1];
 
   double deltaPX = activeWaypoint[0] - lastWaypoint[0];
   double deltaPY = activeWaypoint[1] - lastWaypoint[1];
@@ -22,8 +22,8 @@ template<> std::array<double,2> NearestTracker<2>::getGoalPoint(double robotx, d
 }
 
 template<> std::array<double,3> NearestTracker<3>::getGoalPoint(double robotx, double roboty){
-  double deltaRX = activeWaypoint[0] - robotx;
-  double deltaRY = activeWaypoint[1] - roboty;
+  double deltaRX = robotx - lastWaypoint[0];
+  double deltaRY = roboty - lastWaypoint[1];
 
   double deltaPX = activeWaypoint[0] - lastWaypoint[0];
   double deltaPY = activeWaypoint[1] - lastWaypoint[1];
