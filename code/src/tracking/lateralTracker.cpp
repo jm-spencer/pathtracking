@@ -48,7 +48,7 @@ template<> std::array<double,2> LateralTracker<3>::getLateralError(double robotx
   }
 
   double dist = sqrt(deltaRX * deltaRX + deltaRY * deltaRY - (projScalar * projScalar * magPsqr));
-  if(std::isnan(dist)){
+  if(std::isnan(dist) && !std::isnan(deltaPX)){
     dist = 0; // can only occur if there is a rounding error significant enough to make "0" < 0
   }
 
@@ -59,6 +59,8 @@ template<> std::array<double,2> LateralTracker<3>::getLateralError(double robotx
   if(std::abs(deltaPTheta) > M_PI){
     deltaPTheta += deltaPTheta > 0 ? -2 * M_PI : 2 * M_PI;
   }
+
+  std::cout << (sign ? dist : -dist) << " " << lastWaypoint[2] << "\t";
 
   return {sign ? dist : -dist, lastWaypoint[2] + std::clamp(projScalar, 0.0, 1.0) * deltaPTheta};
 }
