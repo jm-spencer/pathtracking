@@ -17,7 +17,7 @@ public:
   virtual void disable(bool iisDisabled) override;
 
 protected:
-  std::array<double,2> getGoalPoint(double robotx, double roboty, double lookaheadDistSqr);
+  std::array<double,2> getGoalPoint(double robotx, double roboty, double adaptLookaheadDistSqr);
   double getLateralError(double robotx, double roboty);
 
   std::array<double,2> globalToLocalCoords(const std::array<double,2> &point, const std::array<double,6> &basis);

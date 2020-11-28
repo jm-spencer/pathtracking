@@ -13,20 +13,20 @@ void PurePursuitAdaptive2Tracker::setTarget(const uint &itarget) {
   switch(itarget){
     case 1:
       pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
-      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
-      pathFileC = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path1.3");
+      pathFileC = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path1.3");
       break;
 
     case 2:
       pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
-      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
-      pathFileC = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path2.3");
+      pathFileC = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path2.3");
       break;
 
     case 3:
       pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
-      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
-      pathFileC = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path3.3");
+      pathFileC = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path3.3");
       break;
 
   }
@@ -74,12 +74,13 @@ bool PurePursuitAdaptive2Tracker::isSettled() {
 }
 
 void PurePursuitAdaptive2Tracker::reset() {
-  target = nullptr;
+  target = 0;
   finished = false;
   lastLookaheadWaypoint = {0,0};
   activeLookaheadWaypoint = {0,0};
-  lastNearestWaypoint = {0,0};
-  activeNearestWaypoint = {0,0};
+  lastNearestWaypoint = {0,0,0};
+  activeNearestWaypoint = {0,0,0};
+  activeCurvatureWaypoint = {0,0,0};
   lastReading = {0,0,0,0,0,0};
   error = {0,0,0,0,0,0};
   output = {0,0};
@@ -96,7 +97,7 @@ void PurePursuitAdaptive2Tracker::disable(bool iisDisabled) {
   }
 }
 
-std::array<double,2> PurePursuitAdaptive2Tracker::getGoalPoint(double robotx, double roboty, double lookaheadDistSqr) {
+std::array<double,2> PurePursuitAdaptive2Tracker::getGoalPoint(double robotx, double roboty, double adaptLookaheadDistSqr) {
   double deltaRX = activeLookaheadWaypoint[0] - robotx;
   double deltaRY = activeLookaheadWaypoint[1] - roboty;
 
@@ -104,12 +105,12 @@ std::array<double,2> PurePursuitAdaptive2Tracker::getGoalPoint(double robotx, do
   double deltaPY = activeLookaheadWaypoint[1] - lastLookaheadWaypoint[1];
 
   double b = deltaPX * deltaRX + deltaPY * deltaRY;
-  double c = deltaRX * deltaRX + deltaRY * deltaRY - lookaheadDistSqr;
+  double c = deltaRX * deltaRX + deltaRY * deltaRY - adaptLookaheadDistSqr;
 
   if(c < 0 || b < 0){
     std::copy(activeLookaheadWaypoint.begin(), activeLookaheadWaypoint.end(), lastLookaheadWaypoint.begin());
     activeLookaheadWaypoint = pathFileL->get();
-    return getGoalPoint(robotx, roboty, lookaheadDistSqr);
+    return getGoalPoint(robotx, roboty, adaptLookaheadDistSqr);
   }
 
   double a = deltaPX * deltaPX + deltaPY * deltaPY;
@@ -120,7 +121,7 @@ std::array<double,2> PurePursuitAdaptive2Tracker::getGoalPoint(double robotx, do
     lambda = -1;
   }
 
-  // std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeLookaheadWaypoint[0] + lambda * deltaPX << ", " << activeLookaheadWaypoint[1] + lambda * deltaPY << ")\t";
+  std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << adaptLookaheadDistSqr << "\tG: (" << activeLookaheadWaypoint[0] + lambda * deltaPX << ", " << activeLookaheadWaypoint[1] + lambda * deltaPY << ")\t";
 
   return {activeLookaheadWaypoint[0] + lambda * deltaPX,
           activeLookaheadWaypoint[1] + lambda * deltaPY};
@@ -147,8 +148,10 @@ double PurePursuitAdaptive2Tracker::getCurvature(double robotx, double roboty) {
   double dTheta = std::abs(std::fmod(activeCurvatureWaypoint[2] - activeNearestWaypoint[2], 2*M_PI));
 
   if(dTheta > M_PI){
-    dTheta -= 2 * M_PI;
+    dTheta = 2 * M_PI - dTheta;
   }
+
+  std::cout << "dTheta:" << dTheta << "\t";
 
   return dTheta / (n * 5); // 5 (cm) = waypoint spacing
 }

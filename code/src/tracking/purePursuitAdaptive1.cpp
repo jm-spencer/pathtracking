@@ -87,7 +87,7 @@ void PurePursuitAdaptive1Tracker::disable(bool iisDisabled) {
   }
 }
 
-std::array<double,2> PurePursuitAdaptive1Tracker::getGoalPoint(double robotx, double roboty, double lookaheadDistSqr) {
+std::array<double,2> PurePursuitAdaptive1Tracker::getGoalPoint(double robotx, double roboty, double adaptLookaheadDistSqr) {
   double deltaRX = activeLookaheadWaypoint[0] - robotx;
   double deltaRY = activeLookaheadWaypoint[1] - roboty;
 
@@ -95,12 +95,12 @@ std::array<double,2> PurePursuitAdaptive1Tracker::getGoalPoint(double robotx, do
   double deltaPY = activeLookaheadWaypoint[1] - lastLookaheadWaypoint[1];
 
   double b = deltaPX * deltaRX + deltaPY * deltaRY;
-  double c = deltaRX * deltaRX + deltaRY * deltaRY - lookaheadDistSqr;
+  double c = deltaRX * deltaRX + deltaRY * deltaRY - adaptLookaheadDistSqr;
 
   if(c < 0 || b < 0){
     std::copy(activeLookaheadWaypoint.begin(), activeLookaheadWaypoint.end(), lastLookaheadWaypoint.begin());
     activeLookaheadWaypoint = pathFileL->get();
-    return getGoalPoint(robotx, roboty, lookaheadDistSqr);
+    return getGoalPoint(robotx, roboty, adaptLookaheadDistSqr);
   }
 
   double a = deltaPX * deltaPX + deltaPY * deltaPY;
