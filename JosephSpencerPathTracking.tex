@@ -110,15 +110,17 @@ These targets are then given to a modified velocity PD controller of the form:
 \begin{subequations}
 \begin{align}
 e_j(t) &= \omega_j - \omega_{j_a} \\
-u_j(t) &= k_f \cdot \omega_j + k_{sf} \cdot \text{sgn}(\omega_j) + k_p \cdot e_j(t) + k_d \frac{de_j(t)}{dt}
+u_j(t) &= k_f \cdot \omega_j + k_{sf} \cdot \text{sgn}(\omega_j) + \int_0^t \! k_p \cdot e_j(\tau) + k_d \frac{de_j(\tau)}{d\tau} d\tau
 \end{align}
 \end{subequations}
-for a $j$ corresponding to either $l$ or $r$ for either side of the vehicle, $\omega_{j_a}$ corresponding to the measured angular velocity on side $j$, all of the $k$ values being tunable constants, $u_j(t)$ being the voltage sent to the motor (in mV, bounded between $\pm12000$), and sgn() being the signum function. The idea of this controller is taken from \href{https://github.com/OkapiLib/OkapiLib}{OkapiLib}, a library used widely with VEX robots such as this test vehicle. The first two terms are feedforward, indifferent to the measured error, and are intended to estimate the voltage needed to spin at the desired velocity. The first scales linearly with the desired speed, while the second is a constant voltage in the direction of the desired motion, which allows the static friction of the motor to be overcome at even very low target speeds. The latter two terms are feedback, responding to the measured error to bring the angular velocity to the target velocity if the feedforward terms are insufficient. The first of these terms is proportional to the error, driving it to zero, while the other attempts to bring the derivative of the error with respect to time to zero, dampening any oscillations that may appear. The tuning used with this vehicle is:
+for a $j$ corresponding to either $l$ or $r$ for either side of the vehicle, $\omega_{j_a}$ corresponding to the measured angular velocity on side $j$, all of the $k$ values being tunable constants, $u_j(t)$ being the voltage sent to the motor (in mV, bounded between $\pm12000$), and sgn() being the sign function. The idea of this controller is taken from \href{https://github.com/OkapiLib/OkapiLib}{OkapiLib}, a library used widely with VEX robots such as this test vehicle. The first two terms are feedforward, indifferent to the measured error, and are intended to estimate the voltage needed to spin at the desired velocity. The first scales linearly with the desired speed, while the second is a constant voltage in the direction of the desired motion, which allows the static friction of the motor to be overcome at even very low target speeds. The latter two terms in the integral are feedback, responding to the measured error to bring the angular velocity to the target velocity if the feedforward terms are insufficient. The first of these terms is proportional to the error, driving it to zero, while the other attempts to bring the derivative of the error with respect to time to zero, dampening any oscillations that may appear. These terms are then integrated, as when controlling velocity, a change in voltage is needed to drive the error to zero, as opposed to position, which can be driven to zero by a maintained voltage. Additionally, this integral is bounded not allowing the accumulated area to exceed some bounds, usually the voltage constraints of the motor ($\pm12000$). This allows the integral value to immediately start changing the voltage of the motor should the sign of the error change. This is also the reason why the derivative term is not solved out of the integral, as the bounding disallows the Fundamental Theorem of Calculus. 
+
+The controller for this vehicle was tuned by first measuring the minimum voltage needed to overcome static friction, for $k_{sf}$, as well as calculating the slope between $(k_{sf}, 0)$ and $(u_{max},\omega_{max})$ for $k_f$. The feedback terms were then found by trial and error. The tuning used with this vehicle is:
 \begin{equation}
-k_f=49\hspace{35pt}
+k_f=50\hspace{35pt}
 k_{sf}=620 \hspace{35pt}
-k_p=90 \hspace{35pt}
-k_d=25
+k_p=60 \hspace{35pt}
+k_d=50
 \nonumber
 \end{equation}
 
@@ -239,7 +241,7 @@ for a number of waypoints ahead $n$ and a waypoint spacing of $\Delta s$.
 
 As the curvature of the path increases, the ideal lookahead distance is smaller, as the larger the lookahead distance, the sooner a vehicle will attempt to cut a corner. Therefore, a suitable lookahead function is:
 \begin{equation}
-L_{adapt} = \frac{L}{1+|\gamma|}
+L_{adapt} = \frac{L}{1+|\gamma| \cdot L}
 \end{equation}
 for a base lookahead distance of $L$. Note that if the $1$ in the denominator was omitted, a straight path would result in an infinite lookahead distance, which is not ideal.
 
@@ -328,10 +330,10 @@ The basis of the algorithm is to generate a screw that corrects the translationa
 in which $k_t$ and $k_r$ are gains, $d$ is the lookahead distance, $(^W\!\!x_v,^W\!\!y_v)$ and $\theta_v$ are the position and heading of the vehicle, $(^W\!\!x_L,^W\!\!y_L)$ is the position of the goal point, and $^V\!\!y_L$ is the distance from the vehicle to the goal point, only in the vehicle's lateral direction (Wit 57). When these screws are combined, they yield:
 \begin{subequations}
 \begin{multline}
-\vec{\$}_d=\left( 0,0,k_t+k_r\,; k_r\,^W\!\!y_v + k_t \left( ^W\!\!y_v+\frac{d^2}{2\,^V\!\!y_L}\cos{\theta_v} \right), \right. \\ \left. -k_r\,^W\!\!x_v + k_t \left( -^W\!\!x_v+\frac{d^2}{2\,^V\!\!y_L}\sin{\theta_v} \right), 0 \right) \text{if\,} ^V\!\!y_L\neq0
+\vec{\$}_d=\left( 0,0,k_t+k_r\,; \right. \\ \left. k_r\,^W\!\!y_v + k_t \left( ^W\!\!y_v+\frac{d^2}{2\,^V\!\!y_L}\cos{\theta_v} \right), -k_r\,^W\!\!x_v + k_t \left( -^W\!\!x_v+\frac{d^2}{2\,^V\!\!y_L}\sin{\theta_v} \right), 0 \right) \text{if\,} ^V\!\!y_L\neq0
 \end{multline}
 \begin{multline}
-\vec{\$}_d=\left( 0,0,k_r\,; k_r\,^W\!\!y_v + k_t \left( \frac{^W\!\!x_L-^W\!\!x_V}{d} \right), \right. \\ \left. -k_r\,^W\!\!x_v + k_t \left( \frac{^W\!\!y_L-^W\!\!y_L}{d} \right), 0 \right) \text{if\,} ^V\!\!y_L=0
+\vec{\$}_d=\left( 0,0,k_r\,; \right. \\ \left. k_r\,^W\!\!y_v + k_t \left( \frac{^W\!\!x_L-^W\!\!x_V}{d} \right), -k_r\,^W\!\!x_v + k_t \left( \frac{^W\!\!y_L-^W\!\!y_L}{d} \right), 0 \right) \text{if\,} ^V\!\!y_L=0
 \end{multline}
 \end{subequations}
 
@@ -363,7 +365,7 @@ De Luca et al. present a nonlinear control law in their paper "Control of Wheele
 \begin{subequations}
 \begin{align}
 v&=v_d\cos{(\theta_d-\theta)}+k_1\left[(x_d-x)\cos{\theta}+(y_d-y)\sin{\theta}\right] \\
-\omega&=\omega_d+k_2 v_d \frac{\sin{(\theta_d-\theta)}}{\theta_d-\theta}\left[(x_d-x)\cos{\theta}+(y_d-y)\sin{\theta}\right]+k_3(\theta_d-\theta)
+\omega&=\omega_d+k_2 v_d \frac{\sin{(\theta_d-\theta)}}{\theta_d-\theta}\left[(y_d-y)\cos{\theta}-(x_d-x)\sin{\theta}\right]+k_3(\theta_d-\theta)
 \end{align}
 \begin{gather}
 \text{The authors then prove that the control law is stable for $k_i$ selections of:} \nonumber \\
