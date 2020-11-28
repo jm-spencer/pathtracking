@@ -1,8 +1,8 @@
 #pragma once
 #include "kappa/api.hpp"
-#include "tracking/nearestTracker.hpp"
+#include "tracking/lateralTracker.hpp"
 
-class StanleyTracker : public NearestTracker<3> {
+class StanleyTracker : public LateralTracker<3> {
 public:
   StanleyTracker(double ik, double il, double ispeedTarget);
 
