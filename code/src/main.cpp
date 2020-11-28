@@ -6,6 +6,7 @@
 #include "tracking/followThePast.hpp"
 #include "tracking/purePursuit.hpp"
 #include "tracking/purePursuitAdaptive1.hpp"
+#include "tracking/purePursuitAdaptive2.hpp"
 #include "tracking/ramsete.hpp"
 #include "tracking/stanley.hpp"
 #include "tracking/vectorPursuit.hpp"
@@ -101,6 +102,9 @@ void opcontrol() {
 
 	// desired speed (cm/s), lookahead distance (cm)
 	PurePursuitAdaptive1Tracker pp1Tracker(100, 40);
+
+	// # of waypoints sampled, desired speed (cm/s), lookahead distance (cm)
+	PurePursuitAdaptive2Tracker pp2Tracker(8, 100, 40);
 
 	// zeta (unitless), b (1/cm^2), desired speed (cm/s), lookahead distance (cm)
 	RamseteTracker ramseteTracker(0.5, 0.002, 100, 10);
