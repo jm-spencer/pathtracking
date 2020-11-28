@@ -104,7 +104,7 @@ void opcontrol() {
 	PurePursuitAdaptive1Tracker pp1Tracker(100, 50);
 
 	// # of waypoints sampled, desired speed (cm/s), lookahead distance (cm)
-	PurePursuitAdaptive2Tracker pp2Tracker(8, 100, 10);
+	PurePursuitAdaptive2Tracker pp2Tracker(4, 100, 60);
 
 	// zeta (unitless), b (1/cm^2), desired speed (cm/s), lookahead distance (cm)
 	RamseteTracker ramseteTracker(0.5, 0.002, 100, 10);
