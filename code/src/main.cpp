@@ -3,6 +3,7 @@
 #include "odometry/odom4EncImuSimp.hpp"
 
 #include "tracking/followTheCarrot.hpp"
+#include "tracking/followThePast.hpp"
 #include "tracking/purePursuit.hpp"
 #include "tracking/ramsete.hpp"
 #include "tracking/stanley.hpp"
@@ -105,6 +106,9 @@ void opcontrol() {
 
 	// k gain (unitless), desired speed (cm/s), lookahead distance (cm)
 	VectorPursuitTracker vpTracker(1, 75, 35);
+
+	// emulated vehicle length (cm), lookahead distance (cm), desired speed (cm/s)
+	FollowThePastTracker ftpTracker(20, 30, 100);
 
 
 	imu->calibrate();

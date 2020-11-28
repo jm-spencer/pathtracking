@@ -56,5 +56,3 @@ void StanleyTracker::reset() {
 void StanleyTracker::disable(bool iisDisabled) {
   disabled = iisDisabled;
 }
-
-StanleyTracker st(1,1,1);
