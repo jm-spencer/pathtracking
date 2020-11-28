@@ -6,13 +6,28 @@ PurePursuitAdaptive1Tracker::PurePursuitAdaptive1Tracker(double ispeedTarget, do
     //reset();
 }
 
-void PurePursuitAdaptive1Tracker::setTarget(const std::string &itarget) {
+void PurePursuitAdaptive1Tracker::setTarget(const uint &itarget) {
+  finished = false;
+
   this->reset();
 
-  pathFileL = std::make_shared<kappa::BinFileInput<double,2>>(itarget);
-  pathFileN = std::make_shared<kappa::BinFileInput<double,2>>(itarget);
+  switch(itarget){
+    case 1:
+      pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
+      break;
 
-  finished = false;
+    case 2:
+      pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
+      break;
+
+    case 3:
+      pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
+      break;
+
+  }
 
   activeLookaheadWaypoint = pathFileL->get();
   activeNearestWaypoint   = pathFileN->get();
@@ -51,8 +66,7 @@ bool PurePursuitAdaptive1Tracker::isSettled() {
 }
 
 void PurePursuitAdaptive1Tracker::reset() {
-  target = nullptr;
-  finished = false;
+  target = 0;
   lastLookaheadWaypoint.fill(0);
   activeLookaheadWaypoint.fill(0);
   lastNearestWaypoint.fill(0);
@@ -121,7 +135,7 @@ double PurePursuitAdaptive1Tracker::getLateralError(double robotx, double roboty
   }
 
   double dist = sqrt(deltaRX * deltaRX + deltaRY * deltaRY - (projScalar * projScalar * magPsqr));
-  if(std::isnan(dist)){
+  if(std::isnan(dist) && !std::isnan(deltaPX)){
     dist = 0; // can only occur if there is a rounding error significant enough to make "0" < 0
   }
 
