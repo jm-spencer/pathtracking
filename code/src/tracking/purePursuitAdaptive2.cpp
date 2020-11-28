@@ -3,7 +3,7 @@
 
 PurePursuitAdaptive2Tracker::PurePursuitAdaptive2Tracker(uint iN, double ispeedTarget, double ilookaheadDist):
   n(iN), speedTarget(ispeedTarget), lookaheadDist(ilookaheadDist), lookaheadDistSqr(ilookaheadDist * ilookaheadDist){
-    reset();
+    //reset();
 }
 
 void PurePursuitAdaptive2Tracker::setTarget(const std::string &itarget) {

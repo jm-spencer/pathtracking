@@ -3,7 +3,7 @@
 
 PurePursuitAdaptive1Tracker::PurePursuitAdaptive1Tracker(double ispeedTarget, double ilookaheadDist):
   speedTarget(ispeedTarget), lookaheadDist(ilookaheadDist), lookaheadDistSqr(ilookaheadDist * ilookaheadDist){
-    reset();
+    //reset();
 }
 
 void PurePursuitAdaptive1Tracker::setTarget(const std::string &itarget) {
@@ -53,12 +53,12 @@ bool PurePursuitAdaptive1Tracker::isSettled() {
 void PurePursuitAdaptive1Tracker::reset() {
   target = nullptr;
   finished = false;
-  lastLookaheadWaypoint = {0,0};
-  activeLookaheadWaypoint = {0,0};
-  lastNearestWaypoint = {0,0};
-  activeNearestWaypoint = {0,0};
-  lastReading = {0,0,0,0,0,0};
-  error = {0,0,0,0,0,0};
+  lastLookaheadWaypoint.fill(0);
+  activeLookaheadWaypoint.fill(0);
+  lastNearestWaypoint.fill(0);
+  activeNearestWaypoint.fill(0);
+  lastReading.fill(0);
+  error.fill(0);
   output = {0,0};
 }
 
