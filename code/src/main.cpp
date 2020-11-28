@@ -98,7 +98,7 @@ void opcontrol() {
 	PurePursuitTracker ppTracker(100, 40);
 
 	// zeta (unitless), b (1/cm^2), desired speed (cm/s), lookahead distance (cm)
-	RamseteTracker ramseteTracker(0.5, 0.5, 100, 30);
+	RamseteTracker ramseteTracker(0.5, 0.002, 100, 10);
 
 	// k gain (hz), emulated vehicle length (cm), desired speed (cm/s)
 	StanleyTracker stanleyTracker(10, 20, 75);
