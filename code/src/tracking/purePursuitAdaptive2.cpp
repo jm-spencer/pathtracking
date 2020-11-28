@@ -127,10 +127,10 @@ double PurePursuitAdaptive2Tracker::getCurvature(double robotx, double roboty) {
     return getCurvature(robotx, roboty);
   }
 
-  double dTheta = std::fmod(activeCurvatureWaypoint[2] - activeNearestWaypoint[2], 2*M_PI);
+  double dTheta = std::abs(std::fmod(activeCurvatureWaypoint[2] - activeNearestWaypoint[2], 2*M_PI));
 
-  if(std::abs(dTheta) > M_PI){
-    dTheta += dTheta > 0 ? -2 * M_PI : 2 * M_PI;
+  if(dTheta > M_PI){
+    dTheta -= 2 * M_PI;
   }
 
   return dTheta / (n * 5); // 5 (cm) = waypoint spacing

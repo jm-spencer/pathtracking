@@ -110,10 +110,10 @@ void opcontrol() {
 	RamseteTracker ramseteTracker(0.5, 0.002, 100, 10);
 
 	// k gain (hz), emulated vehicle length (cm), desired speed (cm/s)
-	StanleyTracker stanleyTracker(10, 20, 75);
+	StanleyTracker stanleyTracker(10, 20, 100);
 
 	// k gain (unitless), desired speed (cm/s), lookahead distance (cm)
-	VectorPursuitTracker vpTracker(1, 75, 35);
+	VectorPursuitTracker vpTracker(1, 100, 35);
 
 	// emulated vehicle length (cm), lookahead distance (cm), desired speed (cm/s)
 	FollowThePastTracker ftpTracker(20, 30, 100);
