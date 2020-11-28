@@ -191,12 +191,12 @@ void opcontrol() {
 	auto t = pros::millis();
 
 //	stanleyTracker.setTarget(pathFile);
-	pp1Tracker.setTarget(1);
+	pp2Tracker.setTarget(1);
 
-	while(!pp1Tracker.isSettled()){
+	while(!pp2Tracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(pp1Tracker.step(pos));
+		chassis->set(pp2Tracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();

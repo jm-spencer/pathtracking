@@ -2,11 +2,11 @@
 #include "kappa/api.hpp"
 #include "tracking/lookaheadTracker.hpp"
 
-class PurePursuitAdaptive2Tracker: public kappa::AbstractController<std::array<double,6>,std::string,std::tuple<double,double>> {
+class PurePursuitAdaptive2Tracker: public kappa::AbstractController<std::array<double,6>,uint,std::tuple<double,double>> {
 public:
   PurePursuitAdaptive2Tracker(uint iN, double ispeedTarget, double ilookaheadDist);
 
-  virtual void setTarget(const std::string &itarget) override;
+  virtual void setTarget(const uint &itarget) override;
 
   virtual std::tuple<double,double> step(std::array<double,6> ireading) override;
 

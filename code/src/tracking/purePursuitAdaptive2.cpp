@@ -6,18 +6,35 @@ PurePursuitAdaptive2Tracker::PurePursuitAdaptive2Tracker(uint iN, double ispeedT
     //reset();
 }
 
-void PurePursuitAdaptive2Tracker::setTarget(const std::string &itarget) {
+void PurePursuitAdaptive2Tracker::setTarget(const uint &itarget) {
+  finished = false;
   this->reset();
 
-  pathFileL = std::make_shared<kappa::BinFileInput<double,2>>(itarget);
-  pathFileN = std::make_shared<kappa::BinFileInput<double,2>>(itarget);
-  pathFileC = std::make_shared<kappa::BinFileInput<double,2>>(itarget);
+  switch(itarget){
+    case 1:
+      pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
+      pathFileC = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
+      break;
+
+    case 2:
+      pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
+      pathFileC = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path2.2");
+      break;
+
+    case 3:
+      pathFileL = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
+      pathFileN = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
+      pathFileC = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
+      break;
+
+  }
 
   for(uint i = 0; i < n; i++){
     pathFileC->get();
   }
 
-  finished = false;
 
   activeLookaheadWaypoint = pathFileL->get();
   activeNearestWaypoint   = pathFileN->get();
