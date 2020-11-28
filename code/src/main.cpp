@@ -101,7 +101,7 @@ void opcontrol() {
 	PurePursuitTracker ppTracker(100, 40);
 
 	// desired speed (cm/s), lookahead distance (cm)
-	PurePursuitAdaptive1Tracker pp1Tracker(100, 10);
+	PurePursuitAdaptive1Tracker pp1Tracker(100, 50);
 
 	// # of waypoints sampled, desired speed (cm/s), lookahead distance (cm)
 	PurePursuitAdaptive2Tracker pp2Tracker(8, 100, 40);
