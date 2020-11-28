@@ -1,7 +1,7 @@
 {
     "py/object": "pros.conductor.project.Project",
     "py/state": {
-        "project_name": "Path Tracking",
+        "project_name": "Recording - Path Tracking",
         "target": "v5",
         "templates": {
             "kappaframework": {

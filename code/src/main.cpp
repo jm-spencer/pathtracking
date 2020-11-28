@@ -160,7 +160,6 @@ void opcontrol() {
 
 		auto pos = odom->get();
 
-		positionTelemFile << pros::millis();
 		for(std::size_t i = 0; i < 6; i++){
 			positionTelemFile << ", " << pos[i];
 		}
@@ -168,8 +167,8 @@ void opcontrol() {
 
 		positionTelemFile.flush();
 
-		chassis->set({100  * controller.getAnalog(okapi::ControllerAnalog::leftY), 		// Maximum linear speed, 100 cm/s
-		  						-5.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)}); // Maximum angular velocity, 5.5 rad/s
+		chassis->set({50  * controller.getAnalog(okapi::ControllerAnalog::leftY), 		// ~Half linear speed, (cm/s)
+		  						-2.5 * controller.getAnalog(okapi::ControllerAnalog::rightX)}); // ~Half angular velocity, (rad/s)
 
 		std::cout << "\n";
 
