@@ -23,7 +23,7 @@ std::tuple<double,double> FollowThePastTracker::step(std::array<double,6> ireadi
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
-    double delta = goalPoint[2] + goalPoint[3];
+    double delta = goalPoint[2] + atan(goalPoint[3] * l);
     double phi_t = atan2(goalPoint[1] - ireading[1] + lookaheadDist * sin(delta),
                          goalPoint[0] - ireading[0] + lookaheadDist * cos(delta)
                        ) - delta - ireading[2];
