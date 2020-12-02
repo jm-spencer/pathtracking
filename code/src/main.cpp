@@ -116,7 +116,7 @@ void opcontrol() {
 	VectorPursuitTracker vpTracker(1, 100, 35);
 
 	// emulated vehicle length (cm), lookahead distance (cm), desired speed (cm/s)
-	FollowThePastTracker ftpTracker(20, 10, 100);
+	FollowThePastTracker ftpTracker(5, 50, 100);
 
 
 	imu->calibrate();
