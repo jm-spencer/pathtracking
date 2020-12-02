@@ -24,12 +24,20 @@ std::tuple<double,double> FollowThePastTracker::step(std::array<double,6> ireadi
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
     double delta = goalPoint[2] + atan(goalPoint[3] * l);
-    double phi_t = atan2(goalPoint[1] - ireading[1] + lookaheadDist * sin(delta),
+    double phi_a = atan2(goalPoint[1] - ireading[1] + lookaheadDist * sin(delta),
                          goalPoint[0] - ireading[0] + lookaheadDist * cos(delta)
-                       ) - delta - ireading[2];
+                       );
+
+    double phi_t = std::fmod(phi_a - ireading[2], 2 * M_PI);
+
+    if(std::abs(phi_t) > M_PI){
+        phi_t += phi_t > 0 ? -2 * M_PI : 2 * M_PI;
+    }
+
+    std::cout << "(" << ireading[0] << ", " << ireading[1] << ")\t(" << goalPoint[0] << ", " << goalPoint[1] << ")\t" << phi_a << " " << ireading[2] << " " << phi_t;
 
     output = {speedTarget,
-              (ireading[3] / l) * tan(phi_t)};
+              (ireading[3] / l) * tan(std::clamp(phi_t, -M_PI_2, M_PI_2))};
   } else {
     output = {0,0};
   }

@@ -10,7 +10,7 @@ template<> std::array<double,2> NearestTracker<2>::getGoalPoint(double robotx, d
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / (deltaPX * deltaPX + deltaPY * deltaPY);
 
-  if(projScalar > 1){
+  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX))){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -30,7 +30,7 @@ template<> std::array<double,3> NearestTracker<3>::getGoalPoint(double robotx, d
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / (deltaPX * deltaPX + deltaPY * deltaPY);
 
-  if(projScalar > 1 || std::isnan(projScalar)){
+  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX))){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -57,7 +57,7 @@ template<> std::array<double,4> NearestTracker<4>::getGoalPoint(double robotx, d
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / (deltaPX * deltaPX + deltaPY * deltaPY);
 
-  if(projScalar > 1 || std::isnan(projScalar)){
+  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX))){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;

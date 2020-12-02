@@ -8,5 +8,5 @@ binfile = open("binFile", mode='wb')
 
 for point in points:
     p = numpy.array(point)
-    p1 = p.astype(numpy.cdouble)
+    p1 = p.astype(numpy.float64)
     p1.tofile(binfile)
