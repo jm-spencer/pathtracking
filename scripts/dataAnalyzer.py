@@ -48,21 +48,21 @@ def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
 
 for telemNum in range(1,len(sys.argv)):
 
-    fig, ax = plt.subplots()
+    fig, axs = plt.subplots(2, gridspec_kw={'height_ratios': [4, 1]})
+    fig.set_size_inches(6.4, 7.2)
 
-    #ax.set_xlim(-61, 305)
-    #ax.set_ylim(-61, 305)
+    #axs[0].set_xlim(-61, 305)
+    #axs[0].set_ylim(-61, 305)
 
-    path = csvToColumns('paths/ftp1.csv')
-    ax.plot(path[0], path[1], 'b')
+    path = csvToColumns('paths/path1.4.csv')
+    axs[0].plot(path[0], path[1], 'b')
 
     robot = csvToColumns(str(sys.argv[telemNum]))
-    ax.plot(robot[1], robot[2], 'r')
+    axs[0].plot(robot[1], robot[2], 'r')
 
-    ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
-    ax.grid()
-
-    fig.savefig("analysis/" + str(sys.argv[telemNum])[5:-4] + ".png")
+    axs[0].set_aspect(1)
+    axs[0].set(xlabel='X (cm)', ylabel='Y (cm)', title=str(sys.argv[telemNum]).split('/')[-1][0:-4])
+    axs[0].grid()
 
     lastJ = 0
     error = []
@@ -81,6 +81,14 @@ for telemNum in range(1,len(sys.argv)):
                 if lastJ == len(path[0]) - 2:
                     error.append(lastDist)
 
-                    # ax.plot(range(len(error)), error, 'b')
+    mean = np.mean(error)
+    sd   = np.std(error)
+    ylim = max(np.abs(error)) * 1.05
+    axs[1].plot(range(len(error)), error, 'b')
+    axs[1].set_xlim(0, len(error)-1)
+    axs[1].set_ylim(-ylim, ylim)
+    axs[1].set(xlabel='Point Number\nμ=' + str(mean) + ' σ=' + str(sd), ylabel='Error (cm)')
+    axs[1].grid(axis='y')
 
+    fig.savefig("analysis/" + str(sys.argv[telemNum])[5:-4] + ".png")
     plt.show()
