@@ -46,39 +46,41 @@ def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
   return math.sqrt(distsqr) if cross >= 0 else -1 * math.sqrt(distsqr)
 
 
-fig, ax = plt.subplots()
+for telemNum in range(1,len(sys.argv)):
 
-#ax.set_xlim(-61, 305)
-#ax.set_ylim(-61, 305)
+    fig, ax = plt.subplots()
 
-path = csvToColumns('paths/path1.4.csv')
-ax.plot(path[0], path[1], 'b')
+    #ax.set_xlim(-61, 305)
+    #ax.set_ylim(-61, 305)
 
-robot = csvToColumns(str(sys.argv[1]))
-ax.plot(robot[1], robot[2], 'r')
+    path = csvToColumns('paths/ftp1.csv')
+    ax.plot(path[0], path[1], 'b')
 
-ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
-ax.grid()
+    robot = csvToColumns(str(sys.argv[telemNum]))
+    ax.plot(robot[1], robot[2], 'r')
 
-fig.savefig("analysis/" + str(sys.argv[1])[5:-4] + ".png")
+    ax.set(xlabel='X (cm)', ylabel='Y (cm)', title='Path')
+    ax.grid()
 
-lastJ = 0
-error = []
-for i in range(len(robot[0])):
-  lastDist = float('inf')
-  for j in range(lastJ, len(path[0]) - 1):
-    dist = lineSeg2PointDist(path[0][j], path[1][j], path[0][j+1], path[1][j+1], robot[1][i], robot[2][i])
-    #print("%s (%s, %s)\t %s (%s,%s)\t dist = %s" % (i, robot[1][i], robot[2][i], j, path[0][j], path[1][j], dist))
-    if(abs(dist) > abs(lastDist)):
-      #print("selecting %s:%s (%s)" % (i, lastJ, lastDist))
-      error.append(lastDist)
-      break
-    else:
-      lastDist = dist
-      lastJ = j
-  if lastJ == len(path[0]) - 2:
-    error.append(lastDist)
+    fig.savefig("analysis/" + str(sys.argv[telemNum])[5:-4] + ".png")
 
-# ax.plot(range(len(error)), error, 'b')
+    lastJ = 0
+    error = []
+    for i in range(len(robot[0])):
+        lastDist = float('inf')
+        for j in range(lastJ, len(path[0]) - 1):
+            dist = lineSeg2PointDist(path[0][j], path[1][j], path[0][j+1], path[1][j+1], robot[1][i], robot[2][i])
+            #print("%s (%s, %s)\t %s (%s,%s)\t dist = %s" % (i, robot[1][i], robot[2][i], j, path[0][j], path[1][j], dist))
+            if(abs(dist) > abs(lastDist)):
+                #print("selecting %s:%s (%s)" % (i, lastJ, lastDist))
+                error.append(lastDist)
+                break
+            else:
+                lastDist = dist
+                lastJ = j
+                if lastJ == len(path[0]) - 2:
+                    error.append(lastDist)
 
-plt.show()
+                    # ax.plot(range(len(error)), error, 'b')
+
+    plt.show()
