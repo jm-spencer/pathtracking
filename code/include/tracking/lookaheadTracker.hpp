@@ -20,6 +20,15 @@ public:
 
   std::array<double,N> globalToLocalCoords(const std::array<double,N> &point, const std::array<double,6> &basis);
 
+  void skipPoint(uint recurse){
+    if(!recurse) return;
+    
+    std::copy(AbstractTracker<N>::activeWaypoint.begin(), AbstractTracker<N>::activeWaypoint.end(), lastWaypoint.begin());
+    AbstractTracker<N>::activeWaypoint = AbstractTracker<N>::pathFile->get();
+    waypointIndex++;
+    skipPoint(recurse - 1);
+  }
+
 protected:
   double lookaheadDist;
   double lookaheadDistSqr;
