@@ -12,7 +12,7 @@ template<> std::array<double,1> LateralTracker<2>::getLateralError(double robotx
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / magPsqr;
 
-  if(projScalar > 1 || magPsqr == 0){
+  if(projScalar > 1 || magPsqr == 0 || !waypointIndex){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -40,12 +40,14 @@ template<> std::array<double,2> LateralTracker<3>::getLateralError(double robotx
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / magPsqr;
 
-  if(projScalar > 1 || magPsqr == 0){
+  if(projScalar > 1 || magPsqr == 0 || !waypointIndex){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
     return getLateralError(robotx, roboty);
   }
+
+//  std::cout << activeWaypoint[0] << ", " << activeWaypoint[1] << "\t" << projScalar << '\t';
 
   double dist = sqrt(deltaRX * deltaRX + deltaRY * deltaRY - (projScalar * projScalar * magPsqr));
   if(std::isnan(dist) && !std::isnan(deltaPX)){
@@ -60,7 +62,7 @@ template<> std::array<double,2> LateralTracker<3>::getLateralError(double robotx
     deltaPTheta += deltaPTheta > 0 ? -2 * M_PI : 2 * M_PI;
   }
 
-  std::cout << (sign ? dist : -dist) << " " << lastWaypoint[2] << "\t";
+//  std::cout << (sign ? dist : -dist) << " " << lastWaypoint[2] << "\t";
 
   return {sign ? dist : -dist, lastWaypoint[2] + std::clamp(projScalar, 0.0, 1.0) * deltaPTheta};
 }

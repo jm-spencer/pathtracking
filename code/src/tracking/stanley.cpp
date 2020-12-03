@@ -35,7 +35,7 @@ std::tuple<double,double> StanleyTracker::step(std::array<double,6> ireading){
       omega = 0;
     }
 
-    std::cout << dTheta << " " << -atan(k * goalPoint[0] / ireading[3]) << " " << omega << '\t';
+//    std::cout << dTheta << " " << -atan(k * goalPoint[0] / ireading[3]) << " " << omega << '\t';
 
     output = {speedTarget, omega};
   } else {
