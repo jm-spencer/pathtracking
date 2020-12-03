@@ -107,7 +107,7 @@ void opcontrol() {
 	PurePursuitAdaptive2Tracker pp2Tracker(4, 100, 41);
 
 	// zeta (unitless), b (1/cm^2), desired speed (cm/s), lookahead distance (cm)
-	RamseteTracker ramseteTracker(0.5, 0.002, 100, 10);
+	RamseteTracker ramseteTracker(0.28, 0.0018, 100, 8);
 
 	// k gain (hz), emulated vehicle length (cm), desired speed (cm/s)
 	StanleyTracker stanleyTracker(6, 20, 100);
@@ -152,7 +152,7 @@ void opcontrol() {
 	);
 */
 
-  auto pathFile = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,4>>("/usd/paths/path3.4");
 
 /*
 	pros::Task odomTask2([&]{
@@ -190,14 +190,14 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
-//	ppTracker.setTarget(pathFile);
-	pp2Tracker.setTarget(3);
+	ramseteTracker.setTarget(pathFile);
+//	pp2Tracker.setTarget(3);
 
-	pp2Tracker.skipPoint(12);
-	while(!pp2Tracker.isSettled()){
+//	ramseteTracker.skipPoint(12);
+	while(!ramseteTracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(pp2Tracker.step(pos));
+		chassis->set(ramseteTracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();

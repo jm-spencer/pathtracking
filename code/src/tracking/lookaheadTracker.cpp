@@ -10,7 +10,7 @@ template<> std::array<double,2> LookaheadTracker<2>::getGoalPoint(double robotx,
   double b = deltaPX * deltaRX + deltaPY * deltaRY;
   double c = deltaRX * deltaRX + deltaRY * deltaRY - effectiveLookaheadSqr;
 
-  if(c < 0 || b < 0){
+  if(c < 0 || b < 0 || !waypointIndex){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -41,7 +41,7 @@ template<> std::array<double,3> LookaheadTracker<3>::getGoalPoint(double robotx,
   double b = deltaPX * deltaRX + deltaPY * deltaRY;
   double c = deltaRX * deltaRX + deltaRY * deltaRY - effectiveLookaheadSqr;
 
-  if(c < 0 || b < 0){
+  if(c < 0 || b < 0 || !waypointIndex){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -79,7 +79,7 @@ template<> std::array<double,4> LookaheadTracker<4>::getGoalPoint(double robotx,
   double b = deltaPX * deltaRX + deltaPY * deltaRY;
   double c = deltaRX * deltaRX + deltaRY * deltaRY - effectiveLookaheadSqr;
 
-  if(c < 0 || b < 0){
+  if(c < 0 || b < 0 || !waypointIndex){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -94,7 +94,7 @@ template<> std::array<double,4> LookaheadTracker<4>::getGoalPoint(double robotx,
     lambda = -1;
   }
 
-  // std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
+   std::cout << "(" << robotx << ", " << roboty << ")\t" << lambda << " " << waypointIndex << "\tG: (" << activeWaypoint[0] + lambda * deltaPX << ", " << activeWaypoint[1] + lambda * deltaPY << ")\t";
 
   double deltaPTheta = std::fmod(activeWaypoint[2] - lastWaypoint[2], 2 * M_PI);
 
@@ -126,7 +126,7 @@ template<> std::array<double,3> LookaheadTracker<3>::globalToLocalCoords(const s
   double sinTheta = sin(basis[2]);
   double cosTheta = cos(basis[2]);
 
-  //std::cout << "G': (" << deltaXg * cosTheta + deltaYg * sinTheta << ", " << deltaYg * cosTheta - deltaXg * sinTheta << ")\t";
+//  std::cout << "G': (" << deltaXg * cosTheta + deltaYg * sinTheta << ", " << deltaYg * cosTheta - deltaXg * sinTheta << ")\t";
 
   return {deltaXg * cosTheta + deltaYg * sinTheta,
           deltaYg * cosTheta - deltaXg * sinTheta,
