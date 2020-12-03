@@ -10,7 +10,7 @@ public:
   }
 
   std::array<double,N> getGoalPoint(double robotx, double roboty);
-  
+
 protected:
   double waypointIndex{0};
 

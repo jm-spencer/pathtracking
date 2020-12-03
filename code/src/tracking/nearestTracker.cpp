@@ -10,7 +10,7 @@ template<> std::array<double,2> NearestTracker<2>::getGoalPoint(double robotx, d
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / (deltaPX * deltaPX + deltaPY * deltaPY);
 
-  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX))){
+  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX) || !waypointIndex)){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -30,7 +30,7 @@ template<> std::array<double,3> NearestTracker<3>::getGoalPoint(double robotx, d
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / (deltaPX * deltaPX + deltaPY * deltaPY);
 
-  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX))){
+  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX) || !waypointIndex)){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -57,7 +57,7 @@ template<> std::array<double,4> NearestTracker<4>::getGoalPoint(double robotx, d
 
   double projScalar = (deltaRX * deltaPX + deltaRY * deltaPY) / (deltaPX * deltaPX + deltaPY * deltaPY);
 
-  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX))){
+  if(projScalar > 1 || (std::isnan(projScalar) && !std::isnan(deltaPX) || !waypointIndex)){
     std::copy(activeWaypoint.begin(), activeWaypoint.end(), lastWaypoint.begin());
     activeWaypoint = pathFile->get();
     waypointIndex++;
@@ -71,6 +71,8 @@ template<> std::array<double,4> NearestTracker<4>::getGoalPoint(double robotx, d
   }
 
   double deltaPGamma = activeWaypoint[3] - lastWaypoint[3];
+
+  // std::cout << "(" << robotx << ", " << roboty << ")\t" << projScalar << " " << waypointIndex << "\tG: (" << lastWaypoint[0] + projScalar * deltaPX << ", " << lastWaypoint[1] + projScalar * deltaPY << ")\t";
 
   return {lastWaypoint[0] + projScalar * deltaPX,
           lastWaypoint[1] + projScalar * deltaPY,
