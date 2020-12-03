@@ -24,7 +24,6 @@ def csvToColumns(filename):
 
 def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
   projScalar = ((Rx - P1x)*(P2x - P1x) + (Ry - P1y)*(P2y - P1y)) / ((P2x - P1x)*(P2x - P1x) + (P2y - P1y)*(P2y - P1y))
-  #print("\n"+str(projScalar))
 
   distsqr = 0
   if projScalar >= 1:
@@ -34,7 +33,7 @@ def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
   else:
     distsqr = (P1x - Rx) ** 2 + (P1y - Ry) ** 2 - ((projScalar ** 2) * ((P2x - P1x) ** 2 + (P2y - P1y) ** 2))
 
-  #print(distsqr)
+  # print("<%s,%s>" % (projScalar, distsqr))
 
   cross = (P2x - P1x) * (Ry - P1y) - (P2y - P1y) * (Rx - P1x)
 
@@ -67,19 +66,20 @@ for telemNum in range(1,len(sys.argv)):
     lastJ = 0
     error = []
     for i in range(len(robot[0])):
-        lastDist = float('inf')
-        for j in range(lastJ, len(path[0]) - 1):
+        minDist = float('inf')
+        minimizedIndex = 0
+        upperBound = lastJ + 9 if lastJ + 9 < len(path[0]) else len(path[0]) - 1
+
+        for j in range(lastJ, upperBound):
             dist = lineSeg2PointDist(path[0][j], path[1][j], path[0][j+1], path[1][j+1], robot[1][i], robot[2][i])
-            #print("%s (%s, %s)\t %s (%s,%s)\t dist = %s" % (i, robot[1][i], robot[2][i], j, path[0][j], path[1][j], dist))
-            if(abs(dist) > abs(lastDist)):
-                #print("selecting %s:%s (%s)" % (i, lastJ, lastDist))
-                error.append(lastDist)
-                break
-            else:
-                lastDist = dist
-                lastJ = j
-                if lastJ == len(path[0]) - 2:
-                    error.append(lastDist)
+            if(abs(dist) < abs(minDist)):
+                minimizedIndex = j
+                minDist = dist
+
+        if not math.isnan(minDist):
+            # print("selecting\t%s (%s, %s)\t%s (%s,%s)-(%s,%s)\t dist = %s" % (i, robot[1][i], robot[2][i], minimizedIndex, path[0][minimizedIndex], path[1][minimizedIndex], path[0][minimizedIndex+1], path[1][minimizedIndex+1], minDist))
+            error.append(minDist)
+            lastJ = minimizedIndex
 
     mean = np.mean(error)
     sd   = np.std(error)
