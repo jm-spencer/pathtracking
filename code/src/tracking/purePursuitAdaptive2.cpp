@@ -35,6 +35,8 @@ void PurePursuitAdaptive2Tracker::setTarget(const uint &itarget) {
     pathFileC->get();
   }
 
+  lastLookaheadWaypoint   = pathFileL->get();
+  lastNearestWaypoint     = pathFileN->get();
 
   activeLookaheadWaypoint = pathFileL->get();
   activeNearestWaypoint   = pathFileN->get();
@@ -170,4 +172,12 @@ std::array<double,2> PurePursuitAdaptive2Tracker::globalToLocalCoords(const std:
 
   return {deltaXg * cosTheta + deltaYg * sinTheta,
           deltaYg * cosTheta - deltaXg * sinTheta};
+}
+
+void PurePursuitAdaptive2Tracker::skipPoint(uint recurse){
+  if(!recurse) return;
+
+  std::copy(activeLookaheadWaypoint.begin(), activeLookaheadWaypoint.end(), lastLookaheadWaypoint.begin());
+  activeLookaheadWaypoint = pathFileL->get();
+  skipPoint(recurse - 1);
 }
