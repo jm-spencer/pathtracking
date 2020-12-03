@@ -53,7 +53,7 @@ for telemNum in range(1,len(sys.argv)):
     #axs[0].set_xlim(-61, 305)
     #axs[0].set_ylim(-61, 305)
 
-    path = csvToColumns('paths/path1.4.csv')
+    path = csvToColumns('paths/path3.4.csv')
     axs[0].plot(path[0], path[1], 'b')
 
     robot = csvToColumns(str(sys.argv[telemNum]))
