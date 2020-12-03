@@ -16,6 +16,8 @@ public:
 
   virtual void disable(bool iisDisabled) override;
 
+  void skipPoint(uint recurse);
+
 protected:
   std::array<double,2> getGoalPoint(double robotx, double roboty, double adaptLookaheadDistSqr);
   double getLateralError(double robotx, double roboty);

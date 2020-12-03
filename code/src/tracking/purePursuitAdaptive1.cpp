@@ -29,6 +29,8 @@ void PurePursuitAdaptive1Tracker::setTarget(const uint &itarget) {
 
   }
 
+  lastLookaheadWaypoint   = pathFileL->get();
+  lastNearestWaypoint     = pathFileN->get();
   activeLookaheadWaypoint = pathFileL->get();
   activeNearestWaypoint   = pathFileN->get();
 }
@@ -44,12 +46,16 @@ std::tuple<double,double> PurePursuitAdaptive1Tracker::step(std::array<double,6>
     double lateralError = getLateralError(ireading[0], ireading[1]);
     double adaptiveLookaheadDistSqr = lookaheadDistSqr + 2 * lookaheadDist * lateralError + lateralError * lateralError;
 
+    std::cout << lateralError << ' ' << adaptiveLookaheadDistSqr << '\t';
+
     std::array<double,2> &&goalPoint = globalToLocalCoords(getGoalPoint(ireading[0], ireading[1], adaptiveLookaheadDistSqr), ireading);
 
     if (std::isnan(goalPoint[0])) {
       finished = true;
       return {0,0};
     }
+
+    std::cout << goalPoint[0] << ", " << goalPoint[1];
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
@@ -151,4 +157,12 @@ std::array<double,2> PurePursuitAdaptive1Tracker::globalToLocalCoords(const std:
 
   return {deltaXg * cosTheta + deltaYg * sinTheta,
           deltaYg * cosTheta - deltaXg * sinTheta};
+}
+
+void PurePursuitAdaptive1Tracker::skipPoint(uint recurse){
+  if(!recurse) return;
+
+  std::copy(activeLookaheadWaypoint.begin(), activeLookaheadWaypoint.end(), lastLookaheadWaypoint.begin());
+  activeLookaheadWaypoint = pathFileL->get();
+  skipPoint(recurse - 1);
 }

@@ -101,7 +101,7 @@ void opcontrol() {
 	PurePursuitTracker ppTracker(100, 29);
 
 	// desired speed (cm/s), lookahead distance (cm)
-	PurePursuitAdaptive1Tracker pp1Tracker(100, 18);
+	PurePursuitAdaptive1Tracker pp1Tracker(100, 20);
 
 	// # of waypoints sampled, desired speed (cm/s), lookahead distance (cm)
 	PurePursuitAdaptive2Tracker pp2Tracker(4, 100, 60);
@@ -190,14 +190,14 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
-	ppTracker.setTarget(pathFile);
-	//pp1Tracker.setTarget(1);
+//	ppTracker.setTarget(pathFile);
+	pp1Tracker.setTarget(2);
 
-//	ppTracker.skipPoint(12);
-	while(!ppTracker.isSettled()){
+	pp1Tracker.skipPoint(12);
+	while(!pp1Tracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(ppTracker.step(pos));
+		chassis->set(pp1Tracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();
