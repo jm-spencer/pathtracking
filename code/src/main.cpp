@@ -98,7 +98,7 @@ void opcontrol() {
 	FollowTheCarrotTracker ftcTracker(5, 100, 30);
 
 	// desired speed (cm/s), lookahead distance (cm)
-	PurePursuitTracker ppTracker(100, 40);
+	PurePursuitTracker ppTracker(100, 29);
 
 	// desired speed (cm/s), lookahead distance (cm)
 	PurePursuitAdaptive1Tracker pp1Tracker(100, 50);
@@ -152,7 +152,7 @@ void opcontrol() {
 	);
 */
 
-  auto pathFile = std::make_shared<kappa::BinFileInput<double,4>>("/usd/paths/ftp2");
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path3.2");
 
 /*
 	pros::Task odomTask2([&]{
@@ -190,14 +190,14 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
-	ftpTracker.setTarget(pathFile);
+	ppTracker.setTarget(pathFile);
 //	pp1Tracker.setTarget(1);
 
-	//ftcTracker.skipPoint(12);
-	while(!ftpTracker.isSettled()){
+	ppTracker.skipPoint(12);
+	while(!ppTracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(ftpTracker.step(pos));
+		chassis->set(ppTracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();
