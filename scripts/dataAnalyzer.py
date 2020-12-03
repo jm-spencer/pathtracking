@@ -53,7 +53,7 @@ for telemNum in range(1,len(sys.argv)):
     #axs[0].set_xlim(-61, 305)
     #axs[0].set_ylim(-61, 305)
 
-    path = csvToColumns('paths/ftp1.csv')
+    path = csvToColumns('paths/path3.4.csv')
     axs[0].plot(path[0], path[1], 'b')
 
     robot = csvToColumns(str(sys.argv[telemNum]))
@@ -68,7 +68,7 @@ for telemNum in range(1,len(sys.argv)):
     for i in range(len(robot[0])):
         minDist = float('inf')
         minimizedIndex = 0
-        upperBound = lastJ + 9 if lastJ + 9 < len(path[0]) else len(path[0]) - 1
+        upperBound = lastJ + 15 if lastJ + 15 < len(path[0]) else len(path[0]) - 1
 
         for j in range(lastJ, upperBound):
             dist = lineSeg2PointDist(path[0][j], path[1][j], path[0][j+1], path[1][j+1], robot[1][i], robot[2][i])
