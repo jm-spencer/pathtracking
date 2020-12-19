@@ -135,9 +135,9 @@ void opcontrol() {
 	);
 */
 	auto odom = std::make_shared<Odom4EncImuSimp>(//OdomVals{33.81375, 27.6225},
-		std::make_unique<okapi::EmaFilter>(.65),
-		std::make_unique<okapi::EmaFilter>(.65),
-		std::make_unique<okapi::EmaFilter>(.65),
+		std::make_unique<okapi::EmaFilter>(.85),
+		std::make_unique<okapi::EmaFilter>(.75),
+		std::make_unique<okapi::EmaFilter>(.75),
 		std::make_shared<kappa::ArrayConsolidator<double,5>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
 			lEnc, bEnc, rEnc, fEnc, imu
 		})
