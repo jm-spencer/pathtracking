@@ -37,7 +37,7 @@ std::tuple<double,double> FollowThePastTracker::step(std::array<double,6> ireadi
     std::cout << "(" << ireading[0] << ", " << ireading[1] << ")\t(" << goalPoint[0] << ", " << goalPoint[1] << ")\t" << phi_a << " " << ireading[2] << " " << phi_t;
 
     output = {speedTarget,
-              (ireading[3] / l) * tan(std::clamp(phi_t, -M_PI_2, M_PI_2))};
+             (speedTarget / l) * tan(std::clamp(phi_t, -M_PI_2, M_PI_2))};
   } else {
     output = {0,0};
   }

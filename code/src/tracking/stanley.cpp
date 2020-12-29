@@ -29,7 +29,7 @@ std::tuple<double,double> StanleyTracker::step(std::array<double,6> ireading){
       dTheta += dTheta > 0 ? -2 * M_PI : 2 * M_PI;
     }
 
-    double omega = (ireading[3] / l) * tan(std::clamp(dTheta + atan(-k * goalPoint[0] / ireading[3]), -M_PI_2, M_PI_2));
+    double omega = (speedTarget / l) * tan(std::clamp(dTheta + atan(-k * goalPoint[0] / speedTarget), -M_PI_2, M_PI_2));
 
     if(std::isnan(omega)){
       omega = 0;

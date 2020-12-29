@@ -46,7 +46,7 @@ std::tuple<double,double> VectorPursuitTracker::step(std::array<double,6> ireadi
     }
 
     output = {speedTarget,
-              ireading[3] / (vscrewy * cosTheta + vscrewx * sinTheta)};
+              speedTarget / (vscrewy * cosTheta + vscrewx * sinTheta)};
 
   } else {
     output = {0,0};

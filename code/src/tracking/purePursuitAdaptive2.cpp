@@ -63,7 +63,7 @@ std::tuple<double,double> PurePursuitAdaptive2Tracker::step(std::array<double,6>
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
-    output = {speedTarget, (2 * goalPoint[1] * ireading[3]) / (adaptiveLookaheadDistSqr)};
+    output = {speedTarget, (2 * goalPoint[1] * speedTarget) / (adaptiveLookaheadDistSqr)};
   } else {
     output = {0,0};
   }

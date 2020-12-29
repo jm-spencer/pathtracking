@@ -23,7 +23,7 @@ std::tuple<double,double> PurePursuitTracker::step(std::array<double,6> ireading
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
-    output = {speedTarget, (2 * goalPoint[1] * ireading[3]) / (lookaheadDistSqr)};
+    output = {speedTarget, (2 * goalPoint[1] * speedTarget) / (lookaheadDistSqr)};
   } else {
     output = {0,0};
   }
