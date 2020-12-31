@@ -55,7 +55,9 @@ for telemNum in range(1,len(sys.argv)):
     #axs[0].set_xlim(-61, 305)
     #axs[0].set_ylim(-61, 305)
 
-    path = csvToColumns('paths/refPath1.csv')
+    pathId = str(sys.argv[telemNum])[-5]
+
+    path = csvToColumns('paths/refPath' + str(pathId) + '.csv')
 
     robotFull = csvToColumns(str(sys.argv[telemNum]))
 
