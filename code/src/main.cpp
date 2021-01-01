@@ -152,7 +152,7 @@ void opcontrol() {
 	);
 */
 
-  auto pathFile = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path3.3");
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,2>>("/usd/paths/path1.2");
 
 /*
 	pros::Task odomTask2([&]{
@@ -190,14 +190,14 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
-	stanleyTracker.setTarget(pathFile);
+	ppTracker.setTarget(pathFile);
 //	pp2Tracker.setTarget(3);
 
 //	ramseteTracker.skipPoint(12);
-	while(!stanleyTracker.isSettled()){
+	while(!ppTracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(stanleyTracker.step(pos));
+		chassis->set(ppTracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();
