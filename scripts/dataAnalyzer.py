@@ -57,7 +57,8 @@ for telemNum in range(1,len(sys.argv)):
 
     pathId = str(sys.argv[telemNum])[-5]
 
-    path = csvToColumns('paths/refPath' + str(pathId) + '.csv')
+    #path = csvToColumns('paths/refPath' + str(pathId) + '.csv')
+    path = csvToColumns('paths/ftp' + str(pathId) + '.csv')
 
     robotFull = csvToColumns(str(sys.argv[telemNum]))
 
@@ -73,9 +74,11 @@ for telemNum in range(1,len(sys.argv)):
             if(abs(dist) < abs(minDist)):
                 minimizedIndex = j
                 minDist = dist
+            #print(str(round(dist, 0)) , end ="," )
+        #print()
 
         if not math.isnan(minDist):
-            # print('selecting\t%s (%s, %s)\t%s (%s,%s)-(%s,%s)\t dist = %s' % (i, robot[1][i], robot[2][i], minimizedIndex, path[0][minimizedIndex], path[1][minimizedIndex], path[0][minimizedIndex+1], path[1][minimizedIndex+1], minDist))
+            #print('selecting\t%s (%s, %s)\t%s (%s,%s)-(%s,%s)\t dist = %s' % (i, robotFull[1][i], robotFull[2][i], minimizedIndex, path[0][minimizedIndex], path[1][minimizedIndex], path[0][minimizedIndex+1], path[1][minimizedIndex+1], minDist))
             error.append(minDist)
             lastJ = minimizedIndex
 
