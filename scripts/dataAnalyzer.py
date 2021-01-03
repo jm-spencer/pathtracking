@@ -57,8 +57,8 @@ for telemNum in range(1,len(sys.argv)):
 
     pathId = str(sys.argv[telemNum])[-5]
 
-    #path = csvToColumns('paths/refPath' + str(pathId) + '.csv')
-    path = csvToColumns('paths/ftp' + str(pathId) + '.csv')
+    path = csvToColumns('paths/refPath' + str(pathId) + '.csv')
+    #path = csvToColumns('paths/ftp' + str(pathId) + '.csv')
 
     robotFull = csvToColumns(str(sys.argv[telemNum]))
 

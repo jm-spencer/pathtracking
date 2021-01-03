@@ -152,7 +152,7 @@ void opcontrol() {
 	);
 */
 
-  auto pathFile = std::make_shared<kappa::BinFileInput<double,4>>("/usd/paths/ftp3");
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,4>>("/usd/paths/path1.4");
 
 /*
 	pros::Task odomTask2([&]{
