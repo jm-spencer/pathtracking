@@ -1,6 +1,10 @@
 #include "tracking/vectorPursuit.hpp"
 #include <cmath>
 
+static inline double sgn(double val) {
+    return val > 0 ? 1 : val < 0 ? -1 : 0;
+}
+
 VectorPursuitTracker::VectorPursuitTracker(double ik, double ispeedTarget, double ilookaheadDist):
   k(ik), speedTarget(ispeedTarget), LookaheadTracker(ilookaheadDist) {
     reset();
@@ -24,29 +28,32 @@ std::tuple<double,double> VectorPursuitTracker::step(std::array<double,6> ireadi
 
     std::copy(goalPoint.begin(), goalPoint.end(), error.begin());
 
-    double cosTheta = cos(ireading[2]);
-    double sinTheta = sin(ireading[2]);
+    double dSqr = goalPointLocal[0] * goalPointLocal[0] + goalPointLocal[1] * goalPointLocal[1];
 
-    double vscrewx, vscrewy;
+    double dTheta = std::fmod(goalPointLocal[2], 2 * M_PI);
 
-    if(goalPointLocal[1] != 0){
-
-      double phi = atan2(2 * goalPointLocal[1] * goalPointLocal[1] - lookaheadDistSqr, 2 * goalPointLocal[0] * goalPointLocal[1]) - atan2(lookaheadDistSqr / 2 * goalPointLocal[1], 0);
-
-      double r2$ = ((k * phi) / ((k-1) * phi + goalPoint[2] - ireading[2])) * (lookaheadDistSqr / 2 * goalPointLocal[1]);
-
-      vscrewx = -r2$ * cosTheta;
-      vscrewy = -r2$ * sinTheta;
-
-    }else{
-
-      vscrewx = -k * ((goalPoint[1] - ireading[1]) / (goalPoint[2] - ireading[2]));
-      vscrewy = -k * ((goalPoint[0] - ireading[0]) / (goalPoint[2] - ireading[2]));
-
+    if(std::abs(dTheta) > M_PI){
+      dTheta += dTheta > 0 ? -2 * M_PI : 2 * M_PI;
     }
 
-    output = {speedTarget,
-              speedTarget / (vscrewy * cosTheta + vscrewx * sinTheta)};
+    if(goalPointLocal[1] == 0){
+      if(dTheta == 0){
+        output = {speedTarget, 0};
+      } else {
+        output = {speedTarget,
+                  speedTarget * dTheta /
+                    (k * ((goalPoint[1] - ireading[1]) * sin(ireading[2]) +
+                          (goalPoint[0] - ireading[0]) * cos(ireading[2])))};
+      }
+    } else {
+      double phi = sgn(goalPointLocal[1]) * (
+                      atan2(2 * goalPointLocal[1] * goalPointLocal[1] - dSqr,
+                            2 * goalPointLocal[0] * std::abs(goalPointLocal[1])) +
+                        M_PI_2);
+
+      output = {speedTarget,
+            2 * speedTarget * goalPointLocal[1] * ((k-1) * phi + dTheta) / (k * phi * dSqr)};
+    }
 
   } else {
     output = {0,0};
