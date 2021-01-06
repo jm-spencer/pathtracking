@@ -109,6 +109,6 @@ for telemNum in range(1,len(sys.argv)):
     axs[1].grid(axis='y')
 
     fig.savefig('analysis/' + str(sys.argv[telemNum])[5:-4] + '.png')
-    plt.show()
+    #plt.show()
 
 json.dump(statTable, open('analysis/stats.json', 'w'))
