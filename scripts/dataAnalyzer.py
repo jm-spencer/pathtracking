@@ -5,7 +5,6 @@ import numpy as np
 import csv
 import math
 import sys
-import json
 
 def csvToColumns(filename):
   points = csv.reader(open(filename))
@@ -45,7 +44,7 @@ def lineSeg2PointDist(P1x, P1y, P2x, P2y, Rx, Ry):
 
   return math.sqrt(distsqr) if cross >= 0 else -1 * math.sqrt(distsqr)
 
-statTable = json.load(open('analysis/stats.json'))
+statTable = open('analysis/stats.csv', 'a')
 
 for telemNum in range(1,len(sys.argv)):
 
@@ -99,7 +98,7 @@ for telemNum in range(1,len(sys.argv)):
     rmse = np.sqrt(np.mean(np.square(error)))
     t    = (robot[0][len(robot[0])-1] - robot[0][0]) / 1000
 
-    statTable[str(sys.argv[telemNum])[5:-4]] = [mean, sd, rmse, t]
+    statTable.write(str(sys.argv[telemNum])[5:-4] + ',' + str(mean) + ',' + str(sd) + ',' + str(rmse) + ',' + str(t) + '\n')
 
     ylim = max(np.abs(error)) * 1.05
     axs[1].plot(range(len(error)), error, 'b')
@@ -111,4 +110,4 @@ for telemNum in range(1,len(sys.argv)):
     fig.savefig('analysis/' + str(sys.argv[telemNum])[5:-4] + '.png')
     #plt.show()
 
-json.dump(statTable, open('analysis/stats.json', 'w'))
+statTable.close()
