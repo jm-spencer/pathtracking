@@ -46,10 +46,7 @@ std::tuple<double,double> VectorPursuitTracker::step(std::array<double,6> ireadi
                           (goalPoint[0] - ireading[0]) * cos(ireading[2])))};
       }
     } else {
-      double phi = sgn(goalPointLocal[1]) * (
-                      atan2(2 * goalPointLocal[1] * goalPointLocal[1] - dSqr,
-                            2 * goalPointLocal[0] * std::abs(goalPointLocal[1])) +
-                        M_PI_2);
+      double phi = 2 * atan2(goalPointLocal[1], goalPointLocal[0]);
 
       output = {speedTarget,
             2 * speedTarget * goalPointLocal[1] * ((k-1) * phi + dTheta) / (k * phi * dSqr)};
