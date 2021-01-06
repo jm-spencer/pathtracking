@@ -113,7 +113,7 @@ void opcontrol() {
 	StanleyTracker stanleyTracker(3, 10, 100);
 
 	// k gain (unitless), desired speed (cm/s), lookahead distance (cm)
-	VectorPursuitTracker vpTracker(1, 100, 35);
+	VectorPursuitTracker vpTracker(5, 100, 25);
 
 	// emulated vehicle length (cm), lookahead distance (cm), desired speed (cm/s)
 	FollowThePastTracker ftpTracker(20, 30, 100);
@@ -152,7 +152,7 @@ void opcontrol() {
 	);
 */
 
-  auto pathFile = std::make_shared<kappa::BinFileInput<double,4>>("/usd/paths/path1.4");
+  auto pathFile = std::make_shared<kappa::BinFileInput<double,3>>("/usd/paths/path1.3");
 
 /*
 	pros::Task odomTask2([&]{
@@ -190,14 +190,14 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
-	ftpTracker.setTarget(pathFile);
+	vpTracker.setTarget(pathFile);
 //	pp2Tracker.setTarget(1);
 
 //	ramseteTracker.skipPoint(12);
-	while(!ftpTracker.isSettled()){
+	while(!vpTracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(ftpTracker.step(pos));
+		chassis->set(vpTracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();

@@ -36,6 +36,8 @@ std::tuple<double,double> VectorPursuitTracker::step(std::array<double,6> ireadi
       dTheta += dTheta > 0 ? -2 * M_PI : 2 * M_PI;
     }
 
+    // std::cout << "(" << ireading[0] << ", " << ireading[1] << ") " << ireading[2] << "\t" << "(" << goalPoint[0] << ", " << goalPoint[1] << ") " << goalPoint[2] << "\t<" << goalPointLocal[1] << " | " << dTheta << ">\t";
+
     if(goalPointLocal[1] == 0){
       if(dTheta == 0){
         output = {speedTarget, 0};
@@ -55,6 +57,8 @@ std::tuple<double,double> VectorPursuitTracker::step(std::array<double,6> ireadi
   } else {
     output = {0,0};
   }
+
+  std::cout << std::get<1>(output) / std::get<0>(output);
 
   return output;
 }
