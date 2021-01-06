@@ -110,7 +110,7 @@ void opcontrol() {
 	RamseteTracker ramseteTracker(0.28, 0.0018, 100, 8);
 
 	// k gain (hz), emulated vehicle length (cm), desired speed (cm/s)
-	StanleyTracker stanleyTracker(3, 10, 100);
+	StanleyTracker stanleyTracker(2, 7, 100);
 
 	// k gain (unitless), desired speed (cm/s), lookahead distance (cm)
 	VectorPursuitTracker vpTracker(5, 100, 25);
@@ -135,9 +135,9 @@ void opcontrol() {
 	);
 */
 	auto odom = std::make_shared<Odom4EncImuSimp>(//OdomVals{33.81375, 27.6225},
-		std::make_unique<okapi::EmaFilter>(.85),
-		std::make_unique<okapi::EmaFilter>(.75),
-		std::make_unique<okapi::EmaFilter>(.75),
+		std::make_unique<okapi::EmaFilter>(.9),
+		std::make_unique<okapi::EmaFilter>(.9),
+		std::make_unique<okapi::EmaFilter>(.9),
 		std::make_shared<kappa::ArrayConsolidator<double,5>>(std::initializer_list<std::shared_ptr<kappa::AbstractInput<double>>>{
 			lEnc, bEnc, rEnc, fEnc, imu
 		})
@@ -190,14 +190,14 @@ void opcontrol() {
 */
 	auto t = pros::millis();
 
-	vpTracker.setTarget(pathFile);
+	stanleyTracker.setTarget(pathFile);
 //	pp2Tracker.setTarget(1);
 
 //	ramseteTracker.skipPoint(12);
-	while(!vpTracker.isSettled()){
+	while(!stanleyTracker.isSettled()){
 		auto pos = odom->get();
 
-		chassis->set(vpTracker.step(pos));
+		chassis->set(stanleyTracker.step(pos));
 		//chassis->set({50,-2});
 
 		positionTelemFile << pros::millis();
