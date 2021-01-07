@@ -1,41 +1,61 @@
-\documentclass[mla7]{mla}
+\documentclass[mla8alt]{mla}
 \usepackage{amsmath}
 \usepackage{hyperref}
 \graphicspath{ {./images/} }
+
+\allowdisplaybreaks
 
 \title{An Exploration of Path Tracking on a Small Nonholonomic Robot}
 \author{Joseph Spencer}
 \professor{Mr. Taddiken, Mr. Miserendino}
 \course{McMullen Capstone 903}
-\date{3 December 2020} 
-
-\allowdisplaybreaks
+\date{6 January 2021} 
 
 \begin{document}
+\begin{titlepage}
+\begin{center}
+\textbf{An Exploration of Path Tracking on a Small Nonholonomic Robot} \\
+\vspace*{0.5cm}
+\textbf{Joseph Spencer}\\
+\vspace*{1cm}
+\noindent
+\hspace{-5cm}
+\makebox[\paperwidth]{\includegraphics[width=1.1\paperwidth]{Stanley}}
+Mr. Miserendino and Mr. Taddiken \\ McMullen Capstone Experience \\ 6 January 2021
+\end{center}
+\end{titlepage}
+
+\newpage
+
+\tableofcontents
+
+\newpage
 
 \begin{abstract}
 
-Path tracking is a specific problem within the field of controls engineering that seeks to devise methods of following a path with an autonomous robot. There are many variations of path tracking that have been designed for different vehicles. This paper will give an overview of the process of path tracking and explore various algorithms used for path tracking, as well as some variations using adaptable parameters. Thereafter, the algorithms and their variations will be tested using a small skid-steer robotic vehicle constructed from VEX Robotics parts. Telemetry data from these tests is used to assess each algorithm's performance, and this data is analyzed to suggest future improvements.
+Path tracking is a specific problem within the field of controls engineering that seeks to devise methods of following a path with an autonomous robot. There are many variations of path tracking that have been designed for different vehicles. This paper will give an overview of the process of path tracking and explore various algorithms used for path tracking, as well as some variations using adaptable parameters. Thereafter, the algorithms and their variations will be tested using a small skid-steer robotic vehicle constructed from VEX Robotics parts. Telemetry data from these tests is used to assess each algorithm's performance, and this data is analyzed to suggest future improvements. Results indicate good performance from staple path tracking algorithms like Pure Pursuit and Follow the Carrot, suggest potential for algorithms like Ramsete to be used for path tracking, as well as demonstrate efficacy in adaptive modifications to such algorithms.
 
 \end{abstract}
+
+\newpage
 
 \begin{paper}
 
 \section{Introduction}
 
-Path tracking is one of the most common methods of controlling complex movement of autonomous vehicles and robots. Recent history has shown great strides in self-driving cars, such as the DARPA Grand and Urban Challenges in 2004/2005 and 2006 respectively, and the diversity of path tracking algorithms continues to grow. Given that path tracking only needs information of the path segments immediately in front of it, it is highly flexible and useful in applications where the path is being generated in real-time, as opposed to alternatives such as motion profiling, which usually need full knowledge of a translation before execution.
+Path tracking is one of the most common methods of controlling complex movement of autonomous vehicles and robots. Recent history has shown great strides in self-driving cars, such as the DARPA Grand and Urban Challenges in 2004/2005 and 2006 respectively, and the diversity of path tracking algorithms continues to grow. Given that path tracking only needs information of the path segments immediately in front of it, it is highly flexible and useful in applications where the path is being generated in real-time. Alternatives, such as motion profiling, usually need full knowledge of a motion before execution.
 
 Path tracking uses an arbitrary path to govern an autonomous vehicle's motion from point A to point B. This is nontrivial as a result of the robot existing in three degrees of freedom, position on a two-dimensional surface and a heading about that surface. Most robots have only two controls to navigate these degrees of freedom: velocity and steering in an Ackerman, or car-like, steering mechanism, or left-side velocity and right-side velocity in a skid-steer or tank-like drive. This property of having less degrees of control than freedom is known as being nonholonomic. Certain other types of drive trains, such as mechanum or Kiwi drives do not have this constraint, allowing them to additionally move laterally, and are therefore called holonomic drives. This additional degree of control allows them to move in all directions regardless of heading, which makes path tracking less useful, as a better solution is usually to move in a straight line from one point to another.
 
-Path tracking as a whole is a system of four parts: path generation, point finding, the tracking algorithm, and motor control. Path generation consists of the creation of a function, normally a parameterized piecewise interpolation function that connects the desired start and end points, and sometimes additional points between the two. The data of the path can be stored as a predetermined set of waypoints on the path, or as a function, which the robot will be able to sample to find points. More advanced systems, for example a self-driving car, could create the path in real-time. Using cameras, radar, and other sensors, a self-driving car could set the path waypoints just ahead of the vehicle while the vehicle travels.
+Most path tracking algorithms must be tuned, meaning they have some set of constant variables which dictates the behavior of the algorithm. In many cases, these values present a tradeoff of aggression and smoothness. A more aggressive tuning will make a greater effort to be on the path, while a smoother tuning may stray from the path more easily but complete the path more quickly due to its less jerky motion. Having both a smooth path and accurate tracking with minimal error is the ideal of path tracking.
+
+Path tracking as a whole is a system of four parts: path generation, point finding, the tracking algorithm, and motor control. Path generation consists of the creation of a function, normally a parameterized piecewise interpolation function that connects the desired start and end points, and sometimes additional points between the two. The data of the path can be stored as a predetermined set of waypoints on the path, or as a function, which the robot will be able to sample to find points. More advanced systems, such as a self-driving car, could create the path in real-time. Using cameras, radar, and other sensors, a self-driving car could set the path waypoints just ahead of the vehicle while the vehicle travels.
 
 After this, while the vehicle is attempting to follow the path, it must find and select a point on the path. The exact properties of this point are dependent on what data is necessary for the next step; however, most algorithms use a goal or lookahead point. A goal point is usually defined as a point that is both on the path and on a circle of a set radius around the vehicle. By setting this radius equal to the lookahead distance, this sets the goal point such that it is one lookahead distance ahead of the vehicle. This lookahead distance becomes a value that is tuned, either by a preset constant or function of something in the environment, in order to maximize controller performance. Lookahead distance is usually tuned by trial-and-error, following the general rule that a larger lookahead distance is more stable, creating less jerky motion, while a smaller lookahead distance follows the path more tightly. However, some tracking algorithms utilize the point on the path nearest to the robot instead, so no lookahead distance is needed. Implicit to this system is the need for the robot to know its own position. This can be done using a position tracking system such as GPS or odometry. GPS uses satellite triangulation to estimate the position of a GPS receiver, while odometry is a type of position tracking which uses a variety of sensors such as shaft encoders and inertial measurement units (IMUs) to integrate changes in sensor data to iteratively estimate position.
 
 Thereafter, the tracking algorithm is applied, which takes the information of the robot's position and the previously selected point and determines a desired instantaneous motion. The form of this desired instantaneous motion varies between algorithms, as some algorithms designed for Ackerman steering will give a desired speed and turning angle, while others designed for skid-steer drives give a desired speed and instantaneous curvature of the vehicle's motion.
 
-Finally, the desired instantaneous motion must be executed by the motors. There exist countless ways to do this, from simple modified-PID controllers to advanced systems using machine learning. All of these systems attempt to keep the measured velocity equal to the desired, or reference, velocity. Due to the sheer number and complication of many control methods, this topic will not be discussed generally here.
-
-This paper will overview a diverse set of path tracking algorithms as well as test their efficacy when applied to the test vehicle. By developing a calculable way to measure deviancy from the path, the algorithms can be empirically tested and reviewed, as well as reveal possible improvements to the algorithms. 
+Finally, the desired instantaneous motion must be executed by the motors. There exist countless ways to do this, from simple modified-PID controllers to advanced systems using machine learning. All of these systems attempt to keep the measured velocity equal to the desired, or reference, velocity. Due to the sheer number and complication of many control methods, this topic will not be discussed generally here. The Capstone research encompasses a diverse set of path tracking algorithms as well as test their efficacy when applied to the test vehicle. By developing a calculable way to measure deviancy from the path, the algorithms can be empirically tested and reviewed as well as reveal possible improvements to the algorithms. 
 
 \section{Test Vehicle}
 
@@ -65,7 +85,7 @@ y(t)&=(2t^3-3t^2+1)y(0)+(-2t^3+3t^2)y(1)+(t^3-2t^2+t)y^\prime(0)+(t^3-t^2)y^\pri
 \end{subequations}
 for any desired behaviors of the function.
 
-In order to store the path information, the functions will be sampled for points on the path. Points will be chosen such that they are spaced about 5 cm apart and saved as binary data accessible to the vehicle. Three different paths, two of which are random shapes, as well as a figure-8, will be used in algorithm testing; these paths will be shown in the testing results section.
+In order to store the path information, the functions will be sampled for points on the path. Points will be chosen such that they are spaced about 5 cm apart and saved as binary data accessible to the vehicle. Three different paths, two of which are random shapes, as well as a figure-8, will be used in algorithm testing; these paths will be shown in the analysis of the telemetry collected during testing.
 
 As the vehicle follows the path, it will select points iteratively, stepping through the binary data as it passes the corresponding points. For the selection of a lookahead point, the nearest waypoint outside of the lookahead distance will be found, and a line segment will be generated between it and the previous waypoint. The lookahead point will be selected as the point on the line segment that is exactly the lookahead distance away from the robot. A similar interpolation mechanism is used by Sidhu et al., who claim that without interpolation ``the resulting steering command ... becomes jerky unless the path points are quite close together'' (4). Placing path waypoints closer together requires a greater amount of computation time to find a point and is therefore not desirable. 
 
@@ -115,7 +135,7 @@ u_j(t) &= k_f \cdot \omega_j + k_{sf} \cdot \text{sgn}(\omega_j) + \int_0^t \! k
 \end{subequations}
 for a $j$ corresponding to either $l$ or $r$ for either side of the vehicle, $\omega_{j_a}$ corresponding to the measured angular velocity on side $j$, all of the $k$ values being tunable constants, $u_j(t)$ being the voltage sent to the motor in mV, bounded between $\pm12000$, and sgn() being the sign function. The idea of this controller is taken from \href{https://github.com/OkapiLib/OkapiLib}{OkapiLib}, a library used widely with VEX robots such as this test vehicle. 
 
-The first two terms are feedforward, indifferent to the measured error, and are intended to estimate the voltage needed to spin at the desired velocity. The first scales linearly with the desired speed, while the second is a constant voltage in the direction of the desired motion, which allows the static friction of the motor to be overcome at even very low target speeds. The latter two terms in the integral are feedback, responding to the measured error to bring the angular velocity to the target velocity if the feedforward terms are insufficient. The first of these terms is proportional to the error, driving it to zero, while the other attempts to bring the derivative of the error with respect to time to zero, dampening any oscillations that may appear. These terms are then integrated, as when controlling velocity, a change in voltage is needed to drive the error to zero, as opposed to position, which can be driven to zero by a maintained voltage. Additionally, this integral is bounded not allowing the accumulated area to exceed some bounds, usually the voltage constraints of the motor ($\pm12000$). This allows the integral value to immediately start changing the voltage of the motor should the sign of the error change. This is also the reason why the derivative term is not solved out of the integral, as the Fundamental Theorem of Calculus does not apply. 
+The first two terms are feedforward, indifferent to the measured error, and are intended to estimate the voltage needed to spin at the desired velocity. The first scales linearly with the desired speed, while the second is a constant voltage in the direction of the desired motion, ensuring the static friction is overcome regardless of the target speed. The latter two terms in the integral are feedback, responding to the measured error to bring the angular velocity to the target velocity if the feedforward terms are insufficient. The first of these terms is proportional to the error, driving it to zero, while the other attempts to bring the derivative of the error with respect to time to zero, dampening any oscillations that may appear. These terms are then integrated, as an increasing control effort is necessary to accelerate to the target velocity. Unlike controlling position, a constant voltage does not significantly change velocity. Additionally, this integral is bounded such that its value may not exceed some bounds, usually the voltage constraints of the motor. This allows the integral value to immediately start changing the voltage of the motor should the sign of the error change.
 
 The controller for this vehicle was tuned by first measuring the minimum voltage needed to overcome static friction, for $k_{sf}$, as well as calculating the slope between $(k_{sf}, 0)$ and $(u_{max},\omega_{max})$ for $k_f$. The feedback terms were then found by trial and error. The tuning used with this vehicle is:
 \begin{equation}
@@ -142,16 +162,16 @@ in which $R$ and $L$ track accumulated arclength tangential to the vehicle's hea
 Team 5225's method differs in two ways; namely, a more precise estimation of displacement and a consideration for lateral displacement. By assuming the curvature over the iteration interval is constant, a circle can be used to estimate the vehicle's motion. In this case, the displacement is given by a chord of the circle. The displacement forwards $\Delta D$ and the change in heading $\Delta \theta$ are given by:
 
 \begin{subequations}
-\begin{align}
-\Delta D_f &= 2\sin{\left(\frac{\Delta\theta}{2}\right)} \cdot \left(\frac{\Delta R}{\Delta \theta}+\frac{w}{2}\right) \label{eqn:odom1}\\
-\Delta \theta &= \frac{\Delta D_r- \Delta D_l}{w} \\
-\text{Equation \ref{eqn:odom1}}& \text{  can be rewritten as:} \nonumber \\
-\Delta D_f &= 2\sin{\left(\frac{\Delta\theta}{2}\right)} \cdot \left(\frac{\Delta R + \Delta L}{2\Delta \theta}\right) \\
-\Delta D_f &= \frac{2}{\Delta \theta}\sin{\left(\frac{\Delta\theta}{2}\right)} \cdot \left(\frac{\Delta R + \Delta L}{2}\right) \\
-\text{Note that:} \nonumber \\
-\lim_{\Delta\theta\to 0} \Delta D_f &= \frac{2}{\Delta \theta} \cdot \frac{\Delta\theta}{2} \cdot \left(\frac{\Delta R + \Delta L}{2}\right) \\ 
-\lim_{\Delta\theta\to 0} \Delta D_f &= \left(\frac{\Delta R + \Delta L}{2}\right)
-\end{align}
+\begin{flalign}
+&&\Delta D_f &= 2\sin{\left(\frac{\Delta\theta}{2}\right)} \cdot \left(\frac{\Delta R}{\Delta \theta}+\frac{w}{2}\right) \label{eqn:odom1} &&\\
+&&\Delta \theta &= \frac{\Delta D_r- \Delta D_l}{w} &&\\
+\text{Equation \ref{eqn:odom1} can be rewritten as:} 
+&&\Delta D_f &= 2\sin{\left(\frac{\Delta\theta}{2}\right)} \cdot \left(\frac{\Delta R + \Delta L}{2\Delta \theta}\right) &&\\
+&&\Delta D_f &= \frac{2}{\Delta \theta}\sin{\left(\frac{\Delta\theta}{2}\right)} \cdot \left(\frac{\Delta R + \Delta L}{2}\right) &&\\
+\text{Note that:} 
+&&\lim_{\Delta\theta\to 0} \Delta D_f &= \frac{2}{\Delta \theta} \cdot \frac{\Delta\theta}{2} \cdot \left(\frac{\Delta R + \Delta L}{2}\right) &&\\ 
+&&\lim_{\Delta\theta\to 0} \Delta D_f &= \left(\frac{\Delta R + \Delta L}{2}\right) &&
+\end{flalign}
 \end{subequations}
 therefore, for a sufficiently small $\Delta \theta$, the two methods are equivalent. This was verified in testing, in which the best performing variation of both types of implementation performed extremely similarly.
 
@@ -179,7 +199,7 @@ However, to improve the performance of this controller, one can use a PID contro
 \omega = k_p e_0 + k_i \int_0^t \! e_0(\tau) \, d\tau + k_d \frac{de_0(t)}{dt}
 \end{equation}
 
-Using a PID controller instead of only a proportional term can add additional stability to the system, creating smoother motion which is able to reach the target more quickly. The integral term works to remove steady state error, or small errors that do not reduce to zero over time, usually caused by the motors not operating under a certain voltage. The derivative term prevents overshoot by dampening the system, which it does by applying a control signal in the opposite direction that the error is changing. While slightly counterintuitive, this causes the system to decelerate as it nears the target, ideally reaching the target with a speed of 0. Both additional control values usually make the system converge to the target more easily.
+Using a PID controller instead of only a proportional term can add additional stability to the system, creating smoother motion which is able to reach the target more quickly. The integral term works to remove steady state error, or small errors that do not reduce to zero over time, usually caused by the motors not operating under a certain voltage. The derivative term prevents overshoot by dampening the system, which it does by applying a control signal in the opposite direction that the error is changing. While slightly counterintuitive, this causes the system to decelerate as it nears the target, ideally reaching the target with a speed of zero. Both additional control values usually make the system converge to the target more easily.
 
 However, both versions of the Follow-the-Carrot algorithm are not necessarily effective. Lundgren notes that ``the vehicle has a tendency to naturally cut corners'' (3). This is because as the vehicle approaches a turn, as soon as the selected carrot point is within the turn, the vehicle will attempt to turn towards it, sometimes before the vehicle itself has reached the turn. Lundgren also claims that the vehicle could oscillate over the path. While the testing of Hogg et al. showed this effect to be minimal when using the PID method, it is likely a significant issue for the proportional-only method. This is likely because the lack of a derivative term means there is no dampening on the system besides friction, which may be not be enough for a robot of sufficient mass.
 
@@ -203,7 +223,7 @@ d&=r-x \\
 (r-x)^2+y^2&=r^2 \\
 r^2-2rx+x^2+y^2&=r^2 \\
 2rx&=l^2 \\
-r&=\frac{l^2}{2x} \\
+r&=\frac{l^2}{2x} \label{eqn:pp1}\\
 \gamma &= \frac{2x}{l^2}
 \end{align}
 \end{subequations}
@@ -228,11 +248,11 @@ L_{adapt} &= L + L_{err}
 \end{subequations}
 in which $L$ is the standard lookahead distance, and minimum value for the lookahead.
 
-By doing this, two issues with the standard Pure Pursuit implementation are fixed. Firstly, as the effective lookahead distance is always greater than the lateral error, the path is necessarily within the lookahead distance of the vehicle. This means there will always be a valid goal point and there is not a need to handle the edge-case of straying from the path. Secondly, as stated by Giesbrecht et al., ``by comparison with the non-adaptive lookahead results...the resultant trajectory can be made much smoother without sacrificing tracking accuracy'' (14). A smoother trajectory means better performance, as jerky motion tends to slow down the vehicle; however, this usually comes at the cost of a maintained error with the path. Having both a smooth path and accurate tracking with minimal error is the ideal of path tracking.
+By doing this, two issues with the standard Pure Pursuit implementation are fixed. Firstly, as the effective lookahead distance is always greater than the lateral error, the path is necessarily within the lookahead distance of the vehicle. This means there will always be a valid goal point and there is not a need to handle the edge-case of straying from the path. Secondly, as stated by Giesbrecht et al., ``by comparison with the non-adaptive lookahead results...the resultant trajectory can be made much smoother without sacrificing tracking accuracy'' (14). A smoother trajectory means better performance, as jerky motion tends to slow down the vehicle; however, this usually comes at the cost of a maintained error with the path.
 
 \subsubsection{Adaptive Lookahead Distance with Respect to Curvature}
 
-Another method of varying the lookahead distance is to adapt with respect to the path, rather than the vehicle's performance. A similar kind of adaptive lookahead is seen in CF-Pursuit from Shan et al., which is another form of path tracking. One of the improvement their novel path tracking algorithms makes over Pure Pursuit is the use of a changing lookahead distance with respect to the curvature of the path over some domain ahead of the vehicle. While not all of the specifics of CF-Pursuit will be discussed here, this trait can be applied as a variant to the Pure Pursuit algorithm. This curvature ahead of the vehicle $\gamma$ can be approximated by: 
+Another method of varying the lookahead distance is to adapt with respect to the path, rather than the vehicle's performance. A similar kind of adaptive lookahead is seen in CF-Pursuit from Shan et al., which is another form of path tracking. One of the improvement their novel path tracking algorithms makes over Pure Pursuit is the use of a changing lookahead distance with respect to the curvature of the path over some domain ahead of the vehicle. While the specifics of CF-Pursuit will not be discussed, this trait can be applied as a variant to the Pure Pursuit algorithm. This curvature ahead of the vehicle $\gamma$ can be approximated by: 
 \begin{equation*}
 \gamma = \frac{\Delta\theta}{\Delta s}
 \end{equation*}
@@ -246,9 +266,9 @@ As the curvature of the path increases, the ideal lookahead distance is smaller,
 \begin{equation}
 L_{adapt} = \frac{L}{1+|\gamma| \cdot L}
 \end{equation}
-for a base lookahead distance of $L$.The $1$ in the denominator prevents an infinite lookahead distance, in the event that $\gamma=0$, as well as setting $L$ as the definitive upper bound for the effective lookahead distance. This function also remains dimensionally consistent as $|\gamma| \cdot L$ is unitless.
+for a base lookahead distance of $L$.This results in an effective lookahead distance of $L$ for a straight path, setting $L$ as the definitive upper bound for the effective lookahead distance. As $\gamma$ increases, the effective lookahead distance decreases, which may improve tracking accuracy around corners. This function also remains dimensionally consistent as $|\gamma| \cdot L$ is unitless.
 
-Shan et al. criticize their use of a curvature dependent lookahead distance; however, their method differs from the one described here. Significantly, the method used by Shan et al. used a fuzzy controller for determining the lookahead distance, which sampled curvature over multiple distances. Such an implementation may have been an over-complicated system that caused instability.
+Shan et al. criticize their use of a curvature dependent lookahead distance; however, their method differs from the one described here. Significantly, the method used by Shan et al. to determining the lookahead distance was a fuzzy controller, which sampled curvature over multiple distances. Such an implementation may have been an over-complicated system that caused instability.
 
 
 \subsection{The Stanley Method}
@@ -290,16 +310,18 @@ $\phi_\alpha$ is defined via two methods in Ringdahl and Hellström's paper; the
 \label{img:ftp1}
 \end{figure}
 
+\newpage
+
 Thereby, the final control law is:
 \begin{subequations}
-\begin{align}
-\phi &= \phi_\alpha+\phi_\beta+\phi_\gamma \\
-\text{which expands to:}\nonumber \\
-\phi &= (\psi-\theta^\prime-\phi^\prime) + (\theta^\prime-\theta) + \phi^\prime \\
-\phi &= \psi-\theta \\
-\text{apply equation \ref{eqn:delta2omega} to convert}&\text{ to angular velocity:}\nonumber \\
-\omega &= \frac{v}{l}\tan{(\psi-\theta)}
-\end{align}
+\begin{flalign}
+&&\phi &= \phi_\alpha+\phi_\beta+\phi_\gamma &&\\
+\text{which expands to:}
+&&\phi &= (\psi-\theta^\prime-\phi^\prime) + (\theta^\prime-\theta) + \phi^\prime &&\\
+&&\phi &= \psi-\theta &&\\
+\text{Applying equation \ref{eqn:delta2omega} yields:}
+&&\omega &= \frac{v}{l}\tan{(\psi-\theta)}&&
+\end{flalign}
 \end{subequations}
 
 
@@ -343,22 +365,35 @@ in which $k_t$ and $k_r$ are gains, $d$ is the lookahead distance, $(^W\!\!x_v,^
 After summing the two screws, the gains $k_t$ and $k_r$ are determined by a desired relative proportion $k$ between the amount of time needed to reach the translational target and the amount of time needed to reach the orientation target. For example, if $k=1$, the algorithm will move the vehicle such that if the motion was sustained, each target would be met at the same time. This allows tuning based on whether position or orientation should be emphasized by the controller. Upon the substitution of this relationship, the center of $\vec{\$}_d$, $(^W\!\!x_{\vec{\$}_d}, ^W\!\!y_{\vec{\$}_d})$ can be calculated. The distance between the center of the screw and the vehicle is the radius, and from that the curvature of the desired motion can be calculated. These coordinates simplify to:
 \begin{subequations}
 \begin{align}
-^W\!\!x_{\vec{\$}_d} &=\,^W\!\!x_v - \frac{k\phi}{(k-1)\phi+(\theta_L-\theta_v)} \left( \frac{d^2}{2\,^V\!\!y_L}\cos{\theta_v} \right)\\
-^W\!\!y_{\vec{\$}_d} &=\,^W\!\!y_v - \frac{k\phi}{(k-1)\phi+(\theta_L-\theta_v)} \left( \frac{d^2}{2\,^V\!\!y_L}\sin{\theta_v} \right)
+^W\!\!x_{\vec{\$}_d} &=\,^W\!\!x_v - \frac{k\phi}{(k-1)\phi+(\theta_L-\theta_v)} \left( \frac{d^2}{2\,^V\!\!y_L}\sin{\theta_v} \right)\\
+^W\!\!y_{\vec{\$}_d} &=\,^W\!\!y_v - \frac{k\phi}{(k-1)\phi+(\theta_L-\theta_v)} \left( \frac{d^2}{2\,^V\!\!y_L}\cos{\theta_v} \right)
 \text{if\,}^V\!\!y_L\neq0 \text{, or}\\
 ^W\!\!x_{\vec{\$}_d} &=\,^W\!\!x_v - k \left( \frac{^W\!\!y_L-^W\!y_v}{\theta_L-\theta_v} \right) \\
 ^W\!\!y_{\vec{\$}_d} &=\,^W\!\!y_v - k \left( \frac{^W\!\!x_L-^W\!x_v}{\theta_L-\theta_v} \right) 
 \text{if\,} ^V\!\!y_L=0
 \end{align}
 \end{subequations}
-these variables mean the same as used in previous equations, as well as $\phi$ being the angle between the vehicle position and the goal point from the perspective of the centerline of the screw $\vec{\$}_d$.  This finally is used to calculate the radius of the screw by:
+
+These variables mean the same as used in previous equations, as well as $\phi$ being the angle from the vehicle position to the goal point about the screw $\vec{\$}_d$. While Wit uses a more complicated calculation, this angle is most easily calculated from:
 \begin{equation}
-r= \,^W\!\!y_v\cos{\theta_v}-^W\!\!x_v\sin{\theta_v}-\left(^W\!\!y_{\vec{\$}_d}\cos{\theta_v}-^W\!\!x_{\vec{\$}_d}\sin{\theta_v}\right)
+\phi=2 \cdot \text{atan2}\left(^V\!\!y_L, ^V\!\!x_L\right)
 \end{equation}
+This finally is used to calculate the radius of the screw by:
+\begin{subequations}
+\begin{align}
+r&= \,^W\!\!y_v\cos{\theta_v}-^W\!\!x_v\sin{\theta_v}-\left(^W\!\!y_{\vec{\$}_d}\cos{\theta_v}-^W\!\!x_{\vec{\$}_d}\sin{\theta_v}\right) \\
+r&= \frac{k\phi}{(k-1)\phi+(\theta_L-\theta_v)} \frac{d^2}{2\,^V\!\!y_L} \label{eqn:vp1}
+\text{if\,}^V\!\!y_L\neq0 \text{, or}\\
+r&= \frac{k}{\theta_L-\theta_v} \left((^W\!\!y_L-^W\!y_v)\sin{\theta_v}+(^W\!\!x_L-^W\!x_v)\cos{\theta_v}\right)
+\text{if\,} ^V\!\!y_L=0
+\end{align}
+\end{subequations}
 Similar to other methods, once the desired radius is found, it can be converted into a desired angular velocity. In this case, $\omega$ is:
 \begin{equation}
 \omega=\frac{v_{current}}{r}
 \end{equation}
+
+Equation \ref{eqn:vp1} includes a $ \frac{d^2}{2\,^V\!\!y_L}$ term, which uses different variables to describe the same principle as Pure Pursuit (equation \ref{eqn:pp1}). However, the inclusion of a coefficient to this allows the tracking algorithm to respond to the desired heading of the path, increasing or decreasing the desired curvature to mitigate overshooting the desired heading. Higher values of $k$ makes this effect more prevalent.
 
 Wit, the original author, claimed that the algorithm ``was less sensitive to the chosen look-ahead distance at various speeds [than Pure Pursuit and Follow-the-Carrot], and it was able to handle situations ... after an unexpected obstacle was encountered'' (108). Other sources also praise the Vector Pursuit method for its robustness and effectiveness.  Lundgren echoes the importance of the property mentioned by Wit, stating that such cases occur in the real world, when a ``vehicle detects sudden obstacles appearing on the path,'' or ``if there is noise in the position estimations, which can happen if the vehicle was using GPS techniques for localizing'' (7). While determining the ideal path tracking algorithm for a submersible tracked robot in simulation, Yeu et al. claim that ``the tracking performance is better in the vector pursuit than in the pure pursuit'' (2785). They attribute this to a slower changing rate of heading angle, which allows for smoother motion of the vehicle.
 
@@ -383,7 +418,7 @@ The authors test this control law as a path tracking algorithm in their paper, i
 
 \subsection{Paths and Errors}
 
-The following three paths will be used to testing and analysis of the path tracking algorithms. They are chosen to attempt to test performance for straight segments, turns, and tight curvatures.
+The following three paths will be used to testing and analysis of the path tracking algorithms. They are chosen to test performance for straight segments, turns, and tight curvatures.
 
 \begin{figure}[H]
 \minipage{0.49\textwidth}
@@ -400,16 +435,17 @@ The following three paths will be used to testing and analysis of the path track
 \endminipage
 \end{figure}
 
-The vehicle's starting position will always be at $(0,0)$, so for path 2 and path 3 the vehicle must begin its tracking with a corrective maneuver onto the path. As this will likely cause the vehicle to not be aligned with the path when it reaches it, it allows for an opportunity to assess how quickly the vehicle can converge to the path, as well as insight as to how quickly any oscillations are dampened. However, path 1 may also experience oscillations caused by asymmetric acceleration at the beginning of the path, or as a result of error accumulated around a turn.
+The vehicle's starting position will always be at $(0,0)$, so for paths 2 and 3 the vehicle must begin its tracking with a corrective maneuver onto the path. As the vehicle will likely not be aligned with the path when it reaches it, it allows for an opportunity to assess how quickly the vehicle can converge to the path as well as insight as to how quickly any oscillations are dampened. However, path 1 may also experience oscillations caused by asymmetric acceleration at the beginning of the path or as a result of error accumulated around a turn.
 
-As the paths are arbitrarily parameterized and the vehicle's position function is discontinuous, there are not specific waypoints to which each vehicle point can be ascribed, and therefore error must be determined differently than simply distance formula between pairs of points. Herein, the error function is determined by the minimum distance between each vehicle point and the path; for the path segments defined by the 15 waypoints which follow the previously selected path point. For example, the first vehicle point's error is the minimum distance between the vehicle point and the path as defined by the first 15 waypoints. If this minimum distance is determined by the path segment around waypoint $P_i$, the second vehicle point's error is determined by the path as defined by the waypoints between $P_i$ and $P_{i+15}$. This ensures that the domain which dictates the error moves with vehicle points, while also disallowing the minimum error to be dictated by a nearby section of the path that the vehicle was not yet tracking at the time the vehicle point was recorded. The sign of the error function is also set by the sign of the cross product between path tangent at $P_i$ and the vector from the path to the vehicle, such that errors to the left are positive and errors to the right are negative. This allows for analysis of the vehicle tending towards one side or the other. Error functions are assessed by their mean $\mu$, standard deviation $\sigma$, and root mean square error $RMSE$.
+As the paths are arbitrarily parameterized and the vehicle's position function is discontinuous, there are not specific waypoints to which each vehicle point can be ascribed. Therefore error must be determined differently than simply distance formula between pairs of points. Herein, the error function is determined by the minimum distance between each vehicle point and the path for the 14 path segments defined by the 15 waypoints that follow the path segment selected for the previous robot position. For example, the first vehicle point's error is the minimum distance between the vehicle point and the path as defined by the first 15 waypoints. If this minimum distance is determined by the path segment around waypoint $P_i$, the second vehicle point's error is determined by the path as defined by the waypoints between $P_i$ and $P_{i+15}$. This ensures that the domain which dictates the error moves with vehicle points, while also correctly ignoring path segments which the vehicle has not yet properly reached, such as the intersection of the figure-8 on path 2. This system will not consider the path's second pass through the intersection while assessing the vehicle's first. Additionally, The sign of the error function is also set by the sign of the cross product between path tangent at $P_i$ and the vector from the path to the vehicle such that errors to the left are positive and errors to the right are negative. This allows for analysis of the vehicle tending towards one side or the other. Error functions are assessed by their mean $\mu$, standard deviation $\sigma$, and root mean square error $RMSE$. Performance can also be assessed by the recorded time taken to complete each path, denoted $t$.
 
-All of the algorithms presented here were tuned such that the standard deviation and root mean square error are minimized on path 1, through trial and error, such that a small increase or decrease in any tuning parameter decreases performance. This tuning was then run on both path 2 and path 3, which gives insight to the algorithm's performance on novel paths.
+All of the algorithms presented here were tuned such that the standard deviation and root mean square error are minimized on path 1 through trial and error, such that a small increase or decrease in any tuning parameter decreases performance. This tuning was then tested on paths 2 and 3, which gives insight to the algorithm's performance on novel paths.
 
 \subsection{Follow The Carrot}
 
-Follow The Carrot greatly exceeded expectations. As expected, the algorithm oscillated over the path; however, the oscillations had a small amplitude, such that the path was followed fairly accurately. The approximately ideal tuning for this vehicle is $k_p=5$hz and $L=30$cm.
+Follow The Carrot greatly exceeded expectations. As expected, the algorithm oscillated over the path; however, the oscillations had a small amplitude that the path was followed fairly accurately, as evidenced by the lowest recorded RMSE on path1. The approximately ideal tuning for this vehicle is $k_p=5$hz and $L=30$cm.
 \begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/ftc}
 \minipage{0.44\textwidth}
 \includegraphics[width=\linewidth]{pathData/ftcpath1}
 \endminipage\hfill
@@ -421,13 +457,14 @@ Follow The Carrot greatly exceeded expectations. As expected, the algorithm osci
 \endminipage
 \end{figure}
 
-The tuning of $k_p$ was heavily reflected in the aggression of the tracking and the frequency of the oscillation, with higher values thereof corresponding to faster oscillation over the path, whereas smaller values tended towards very little oscillation, with the vehicle staying on the outside of each turn. Meanwhile, higher values of $L$ caused the vehicle to be pulled towards the inside of turns, as well as dampening oscillations. This combination of tuning effects allowed for high efficacy of the algorithm, achieving the lowest s.d. of any algorithm on all three paths.
+The tuning of $k_p$ was reflected in the aggression of the tracking and the frequency of the oscillation. Higher values corresponded to faster oscillation over the path, whereas smaller values tended towards very little oscillation, with the vehicle staying on the outside of each turn. Meanwhile, higher values of $L$ caused the vehicle to tend toward the inside of turns and dampen oscillations. This combination of tuning effects allowed for very good performance of the algorithm.
 
 \subsection{Pure Pursuit}
 
 Meeting its expectations as a staple of path tracking algorithm, Pure Pursuit performed well on all three paths. It struggled about tight turns, being unable to follow them well at any tuning. The approximately ideal tuning for this vehicle is $L=29$cm.
 
 \begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/pp}
 \minipage{0.44\textwidth}
 \includegraphics[width=\linewidth]{pathData/pppath1}
 \endminipage\hfill
@@ -439,13 +476,14 @@ Meeting its expectations as a staple of path tracking algorithm, Pure Pursuit pe
 \endminipage
 \end{figure}
 
-The tuning of $L$ seemed to be inversely proportional to the aggression of the algorithm. For values below ideal, significant oscillations appeared, with their amplitude and frequency increasing as $L$ decreased. For values greater than ideal, the oscillations became minimal. However, the vehicle tended to deviate from the path more; namely that the vehicle would move in the outside direction following a turn, while even higher values greater than 40cm would cut inside before a turn, before drifting outside as the turn passed.
+The tuning of $L$ seemed to be inversely proportional to the aggression of the algorithm. For values less than the ideal, significant oscillations appeared with amplitude and frequency increasing as $L$ decreased. For values greater than the ideal, the oscillations became minimal. However, the vehicle tended to deviate from the path more; namely, the vehicle would move in the outside direction following a turn, while values greater than 40cm would cut inside before a turn, before drifting outside as the turn passed.
 
 \subsection{Pure Pursuit Adaptive - Lateral Error}
 
-Adapting the lookahead distance by adding the lateral error proved unsuccessful at improving the overall performance of the Pure Pursuit algorithm. As the vehicle oscillated over the path, it accumulated lateral error, increasing the lookahead distance, which in turn decreased the algorithm's effort to move back onto the path. As the algorithm sets the effective lookahead distance to a value greater than the base lookahead distance, the approximately ideal tuning for the lookahead distance is decreased to $L=20$cm.
+Adapting the lookahead distance by adding the lateral error proved marginally unsuccessful at improving the overall performance of the Pure Pursuit algorithm. As the vehicle strayed from the path, it accumulated lateral error, increasing the lookahead distance, which in turn decreased the algorithm's effort to move back onto the path. As the algorithm sets the effective lookahead distance to a value greater than the base lookahead distance, the approximately ideal tuning for the lookahead distance is decreased slightly to $L=28$cm.
 
 \begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/ppa1}
 \minipage{0.44\textwidth}
 \includegraphics[width=\linewidth]{pathData/ppa1path1}
 \endminipage\hfill
@@ -457,13 +495,14 @@ Adapting the lookahead distance by adding the lateral error proved unsuccessful 
 \endminipage
 \end{figure}
 
-This adaptation of Pure Pursuit did not significantly change the effects of changing the lookahead distance. The observations from standard Pure Pursuit hold true for this variant; however, the frequency of the oscillations present at low values of $L$ is decreased, while the effect of tending toward the outside of a turn is increased in higher values of $L$.
+This adaptation of Pure Pursuit did not significantly change the effects of changing the lookahead distance. The observations from standard Pure Pursuit hold true for this variant. However, the frequency of the oscillations present at low values of $L$ is decreased, while the effect of tending toward the outside of a turn is increased in higher values of $L$.
 
 \subsection{Pure Pursuit Adaptive - Curvature}
 
-Adapting the lookahead distance by the local curvature proved to be a more successful variation of the Pure Pursuit algorithm than by lateral error, and even out-performed the original algorithm in both path 1 and 2. In both of these paths, the reduction of the lookahead distance when approaching an increased curvature pulled the vehicle closer to the path. The approximately ideal tuning for this vehicle is $n=4$ and $L=41$cm.
+Adapting the lookahead distance by the local curvature proved to be a more successful variation of the Pure Pursuit algorithm than by lateral error and even out-performed the original algorithm in all paths; the reduction of the lookahead distance when approaching an increased curvature pulled the vehicle closer to the path. The approximately ideal tuning for this vehicle is $n=4$ and $L=44$cm.
 
 \begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/ppa2}
 \minipage{0.44\textwidth}
 \includegraphics[width=\linewidth]{pathData/ppa2path1}
 \endminipage\hfill
@@ -475,13 +514,14 @@ Adapting the lookahead distance by the local curvature proved to be a more succe
 \endminipage
 \end{figure}
 
-Opposite to the lateral error method of adaptation, this variant of Pure Pursuit had an increased ideal $L$ value, as the effective lookahead distance must be smaller than $L$ for this algorithm. This caused severe oscillations for $L$ values as high as 20cm. While this variant had an apparent increase in tracking ability around turns, the vehicle tended to stray from the path after turns, as the local curvature, which only considered the points ahead of the vehicle, dropped to near zero once the turn has passed. A potential improvement to this variation is to sample curvature both ahead and behind of the vehicle, in order to keep a small lookahead distance after a turn. Variation in $n$ had a marginal effect on the algorithm.
+Unlike the lateral error method of adaptation, this variant of Pure Pursuit had an increased ideal $L$ value as the effective lookahead distance is always smaller than $L$ for this algorithm. This caused severe oscillations for $L$ values as high as 20cm. While this variant had an apparent increase in tracking ability around turns, the vehicle tended to stray from the path after turns. This is likely a result of the local curvature, which only considered the points ahead of the vehicle, dropped to near zero once the turn has passed. A potential improvement to this variation is to sample curvature both ahead and behind of the vehicle in order to maintain a small lookahead distance after a turn. Variation in $n$ had no consistent variation in the algorithm.
 
 \subsection{Stanley Method}
 
-The Stanley Method's trait of only considering the values at the nearest path point seems to hurt the algorithm's ability to track the path tightly around corners. It struggled around most turns, tending towards the outside. The approximately ideal tuning for this vehicle is $k=3$hz and $l=10$cm.
+The Stanley Method's trait of only considering the values at the nearest path point seems to decrease the algorithm's ability to track the path tightly around corners. It overshot most turns, tending towards the outside. The approximately ideal tuning for this vehicle is $k=2$hz and $l=7$cm.
 
 \begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/sm}
 \minipage{0.44\textwidth}
 \includegraphics[width=\linewidth]{pathData/smpath1}
 \endminipage\hfill
@@ -493,13 +533,14 @@ The Stanley Method's trait of only considering the values at the nearest path po
 \endminipage
 \end{figure}
 
-The Stanley Method was a difficult algorithm to tune, as its error did not behave predictably when the tuning was changed. Small variations in $l$ about 10cm resulted in seemingly random changes in error. However, for larger values of $l$, there was a clear trend toward more error as $l$ increased above 20cm. $k$ was associated with aggression of the controller, as larger values thereof caused larger and faster oscillations. The vehicle paths created by this algorithm show what appears to be a polygonal shape around turns, with brief segments of turning and relatively long somewhat straight segments. This is possibly due to the algorithm's output first going through a tangent function, as control effort increases very quickly when the error inside the tangent function gets above a certain threshold. This issue may be averted by bounding the domain of the tangent function, simulating a maximum steering angle of an Ackerman-type vehicle. Further research may be required to test this.
+Values of $l$ larger than 10-15cm, depending on $k$, trended toward more error as $l$. $k$ was associated with aggression of the controller, as larger values thereof caused larger and faster oscillations. The vehicle paths created by this algorithm show what appears to be a polygonal shape around turns, with brief segments of turning and relatively long straight segments. This is possibly due to the algorithm's output first going through a tangent function, as control effort increases very quickly when the error inside the tangent function approaches $\frac{\pi}{2}$. This issue may be averted by bounding the domain of the tangent function, simulating a maximum steering angle of an Ackerman-type vehicle. Further research may be required to test this.
 
 \subsection{Follow The Past}
 
-As Follow The Past necessitates a route pre-recorded by a human operator, the standardized paths cannot be used for this algorithm. The standardized paths have been approximately driven, creating equivalent paths for this algorithm. Like the Stanley method, there seems to be an inherent decrease in performance caused by the consideration of the nearest path point as opposed to a lookahead point on the path. Additionally, this algorithm's use of a recorded instead of generated path helps the algorithm by being a definitively possible path for the vehicle, but also hurts the algorithm by integrating imperfect human control. The approximately ideal tuning for this vehicle is $l=18$cm and $L=18$cm.
+As Follow The Past necessitates a route pre-recorded by a human operator, the standardized paths cannot be used for this algorithm. The standardized paths have been approximately driven, creating equivalent paths for this algorithm. Like the Stanley method, there seems to be an inherent decrease in performance caused by the consideration of the nearest path point as opposed to a lookahead point on the path. Additionally, this algorithm's use of a recorded instead of generated path helps the algorithm by being a definitive path for the vehicle, but also hurts the algorithm by integrating imperfect human control. The approximately ideal tuning for this vehicle is $l=20$cm and $L=30$cm.
 
 \begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/ftp}
 \minipage{0.44\textwidth}
 \includegraphics[width=\linewidth]{pathData/ftppath1}
 \endminipage\hfill
@@ -515,13 +556,30 @@ Lower values of $l$ causes the algorithm to be more aggressive, resulting in hig
 
 \subsection{Vector Pursuit}
 
-As of yet, Vector Pursuit has not performed with stability in testing. Further research is required.
+Vector Pursuit, expectedly, performed very similarly to Pure Pursuit. This algorithm's consideration of desired heading on the path seemed to allow it to be slightly more aggressive without unmanageably oscillating, indicated by its better performance at a lower lookahead distance. The approximately ideal tuning for this vehicle is $k=5$ and $L=25$cm. 
+
+
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/vp}
+\minipage{0.44\textwidth}
+\includegraphics[width=\linewidth]{pathData/vppath1}
+\endminipage\hfill
+\minipage{0.44\textwidth}
+\includegraphics[width=\linewidth]{pathData/vppath2}
+\endminipage\\
+\minipage{0.44\textwidth}
+\includegraphics[width=\linewidth]{pathData/vppath3}
+\endminipage
+\end{figure}
+
+Tuning of the lookahead distance performed as expected, with higher stability and lower aggression as it increased. Tuning of $k$ revealed generally more aggression for higher values thereof, but not very significantly within the tested domain. 
 
 \subsection{Ramsete}
 
-Ramsete proved to be robust in its tracking accuracy, getting the second best scores for s.d. and RMSE on paths 2 and 3. Given that this algorithm was tuned on path 1, the exceptional performance on the other two paths shows that Ramsete is a very consistent algorithm across unique paths. For a lookahead-based tracking algorithm, Ramsete found its tuning with an abnormally low lookahead distance. The approximately ideal tuning for this vehicle is $\zeta=0.28$, $b=0.0018\text{cm}^{-2}$, and $L=8$cm. Note the very small value of $b$: $b$ should be on the order of $1\text{ to }10\text{m}^{-2}$, if using different units, like the cm here, the conversion factor must be respected.
+Ramsete proved to be robust in its tracking accuracy, getting the very good scores for standard deviation and RMSE on paths 2 and 3. Given that this algorithm was tuned on path 1, the exceptional performance on the other two paths shows that Ramsete is a very consistent algorithm across unique paths. For a lookahead-based tracking algorithm, Ramsete found its tuning with an abnormally low lookahead distance. The approximately ideal tuning for this vehicle is $\zeta=0.28$, $b=0.0018\text{cm}^{-2}$, and $L=8$cm.
 
 \begin{figure}[H]
+\includegraphics[width=\linewidth]{tuningGraphs/rs}
 \minipage{0.44\textwidth}
 \includegraphics[width=\linewidth]{pathData/rspath1}
 \endminipage\hfill
@@ -533,17 +591,15 @@ Ramsete proved to be robust in its tracking accuracy, getting the second best sc
 \endminipage
 \end{figure}
 
-Increasing the $\zeta$ term causes a minor increase in the reactivity of the algorithm, and draws the vehicle trajectory closer to the inside of turns. Increasing the $b$ term seems to increase the aggression of the algorithm, slightly increasing the amplitude of any oscillations over the path. Finally, increasing the lookahead distance $L$ seems to dampen the oscillations in the system; however, it also allows the vehicle to stray further from the path during sudden turns.
+Increasing the $\zeta$ term causes a minor increase in the reactivity of the algorithm and draws the vehicle trajectory closer to the inside of turns. Increasing the $b$ term seems to increase the aggression of the algorithm, slightly increasing the amplitude of any oscillations over the path. Finally, increasing the lookahead distance $L$ seems to dampen the oscillations in the system; however, it also allows the vehicle to stray further from the path during sudden turns.
 
 \subsection{Further Data}
 
-While the tunings that minimize error are displayed above, there are many more values that were tested and analyzed in the pursuit of these approximately ideal tunings. All of the data collected in this project is available \href{https://github.com/SpencerJ21/pathtracking/tree/develop/scripts/analysis}{\underline{here}}.
+While the tunings that minimize error are displayed above, there are many more values that were tested and analyzed in the pursuit of these approximately ideal tunings. All of the data and additional graphs and images related to this project are available \href{https://github.com/SpencerJ21/pathtracking/tree/develop/scripts/analysis}{\underline{here}}.
 
 \section{Conclusion}
 
-The growing development in self-driving cars and other autonomous vehicles has made path tracking and its ability to control a nonholonomic vehicle's movement through a plane a significant field for robotics. This paper describes a number of path tracking algorithms, as well as an implementation of path planning, odometry, and motor control: the other functions required for path tracking.
-
-The testing of these path tracking algorithms here indicates that Follow The Carrot is the best performing algorithm on this test vehicle. However, the data also indicates possible improvements in the algorithms in order to produce higher accuracy and lower error, such as different domains of path sampling and bounded control output. Further research is required to see how these improvements will perform.
+The growing development in self-driving cars and other autonomous vehicles has made path tracking and its ability to control a nonholonomic vehicle's movement through a plane a significant field for robotics. This paper describes a number of path tracking algorithms, as well as an implementation of path planning, odometry, and motor control: the other functions required for path tracking. The testing of these path tracking algorithms here indicates that Follow The Carrot is the best performing algorithm on this test vehicle. However, the data also indicates possible improvements in the algorithms in order to produce higher accuracy and lower error, such as different domains of path sampling and bounded control output. Further research is required to see how these improvements will perform.
 
 \end{paper}
 
