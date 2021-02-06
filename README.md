@@ -7,7 +7,7 @@ Path tracking is a specific problem within the field of controls engineering tha
 # Navigating This Repository
 
 ### [code](./code)
-The workspace for the code which runs on the robot. Written in C++ with the [PROS Kernel](https://github.com/purduesigbots/pros).
+The workspace for the code that runs on the robot. Written in C++ with the [PROS Kernel](https://github.com/purduesigbots/pros).
 
 ### [scripts](./scripts)
 Contains the scripts for data processing that happens off of the robot, such as turning the data into images. Written in Python.
