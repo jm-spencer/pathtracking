@@ -109,6 +109,7 @@ For the purposes of testing the path tracking algorithms explained hereafter, a 
 The robot is an eight wheeled vehicle, four of which are larger powered wheels and four of which are smaller tracking wheels. The radius of the larger wheels is approximately 5.24 cm (2.06 in) and the radius of the smaller wheels is approximately 3.49 cm (1.38 in). The powered wheels are each independently driven by one VEX v5 motor with an 18:1 gearbox, providing about 220 rpm with a stall torque of 1 Nm. Each of the tracking wheels are connected to an optical shaft encoder, reading 360 ticks per rotation. These tracking wheels are used for the position tracking of the robot and are separate from the powered wheels to avoid sensor noise in the form of wheel slippage, which may occur when the vehicle accelerates. The structural chassis of the robot measures 44.45 cm $\times$ 44.45 cm $\times$ 10.48 cm (17.5 in $\times$ 17.5 in $\times$ 4.13 in), while the powered wheels have a chassis width of 37.62 cm (14.81 in). The tracking wheels in line with the powered wheels are 33.81 cm (13.31 in) apart and the tracking wheels perpendicular to the powered wheels are 27.64 cm (10.88 in) apart. The rear powered wheels have screws put into the rollers, which drastically increases the lateral static friction of those wheels. Without this modification, going around a turn would result in an amount of lateral velocity that is unmanageable for the tracking algorithms, resulting in poor performance for all algorithms. 
 
 \begin{figure}[H]
+\centering
 \includegraphics[width=0.6\linewidth]{images/TestVehicle}
 \caption{The Test Vehicle}
 \label{img:tv1}
@@ -142,6 +143,7 @@ The path tracking implementations will be the changing variable in the experimen
 Note that the faster the vehicle is moving, the more aggressively the vehicle will react to a desired curvature.
 
 \begin{figure}[H]
+\centering
 \includegraphics[width=0.6\linewidth]{images/GiesbrechtAckermanDiagram}
 \caption{Diagram of an Ackerman drive (Giesbrecht et al. 13)}
 \label{img:ackerman1}
@@ -251,6 +253,7 @@ The Pure Pursuit algorithm is one of the oldest and most popular algorithms in t
 Pure Pursuit follows a similar procedure to Follow-the-Carrot in its goal point selection, choosing a point on the path that is a specified distance from the vehicle. However, rather than an error function and gains approach, Pure Pursuit uses a geometric system. Once a goal point has been determined, a circle is found that passes through both the position of the vehicle and the goal point, as well as being tangent to the heading of the vehicle (see fig. \ref{img:pp1}). This circle, therefore, describes a path from the current position of the robot to the goal point which requires the robot to drive with a constant curvature. This curvature becomes the control output from the algorithm.
 
 \begin{figure}[H]
+\centering
 \includegraphics[width=0.4\linewidth]{images/CoulterPurePursuitDiagram}
 \caption{Geometry of Pure Pursuit Algorithm (Coulter 5)}
 \label{img:pp1}
@@ -344,6 +347,7 @@ where $\theta^\prime$ and $\phi^\prime$ are the recorded heading and steering an
 $\phi_\alpha$ is defined via two methods in Ringdahl and Hellström's paper; the latter will be used here as the original authors state that it is less susceptible to oscillations than the former. In this method, a lookahead point is defined as the sum of a vector with magnitude $l$ in the direction $\theta^\prime+\phi^\prime$, and the path point nearest to the vehicle. $\psi$ is then defined as the heading from the vehicle to the look ahead point. Finally, $\phi_\alpha=\psi-\theta^\prime-\phi^\prime$, such that $\phi_\alpha$ is the difference in heading from the path point to the look ahead point, and the heading from the vehicle position to the look ahead point. This provides a control value that works to move the vehicle back onto the path, without risking oversaturating the controller if lateral error grows to large, as $\phi_\alpha$ is inherently bounded between $(-\frac{\pi}{2},\frac{\pi}{2})$.
 
 \begin{figure}[H]
+\centering
 \includegraphics[width=0.5\linewidth]{images/RingdahlFtPDiagram}
 \caption{Geometry of Follow the Past Algorithm from:\\(Ringdahl and Hellström 5)}
 \label{img:ftp1}
